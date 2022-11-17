@@ -12,7 +12,7 @@
           </p>
           <p>contact<span id="findUs2">| 1544-9001</span></p>
           <p>email<span id="findUs3">| admin@ssafy.com</span></p>
-          <p>Copyright by SSAFY. All rights reserved.</p>
+          <p>copyright by SSAFY. All rights reserved.</p>
         </div>
       </div>
     </div>

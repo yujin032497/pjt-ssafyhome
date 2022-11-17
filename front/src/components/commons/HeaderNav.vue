@@ -5,9 +5,10 @@
     </b-navbar-brand>
 
     <b-navbar-nav>
-      <b-nav-item href="/board" class="text-white">Q&A 게시판</b-nav-item>
-      <b-nav-item href="/apt" class="text-white">실거래가 조회</b-nav-item>
-      <b-nav-item
+      <b-nav-item href="/house" class="text-white">실거래가 조회</b-nav-item>
+      <b-nav-item href="/board/faq" class="text-white">FAQ</b-nav-item>
+      <b-nav-item href="/board/qna" class="text-white">1:1 문의하기</b-nav-item>
+      <!-- <b-nav-item
         href="/fav/list"
         class="text-white"
         :class="{ 'text-hide': loginUser.id === undefined }"
@@ -18,7 +19,7 @@
         class="text-white"
         :class="{ 'text-hide': loginUser.id === undefined }"
         >관심지역 내역
-      </b-nav-item>
+      </b-nav-item> -->
       <b-nav-item
         href="/user/list"
         class="text-white"

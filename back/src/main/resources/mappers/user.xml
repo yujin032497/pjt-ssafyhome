@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pjt.model.mapper.UserDao">
+
+    <resultMap type="user" id="user">
+        <result column="id" property="id"/>
+        <result column="password" property="password"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="is_admin" property="isAdmin"/>
+    </resultMap>
+    <!-- Create -->
+    <insert id="insertUser" parameterType="user">
+        INSERT INTO USER(ID, PASSWORD, NAME, ADDRESS, PHONE, IS_ADMIN)
+        VALUES (#{id}, #{password}, #{name}, #{address}, #{phone}, 0)
+    </insert>
+
+    <insert id="insertUserFavortie" parameterType="String">
+        INSERT INTO FAVORITE(DONGCODE_DONGCODE, USER_ID)
+        VALUES (#{dongCode}, #{userId})
+    </insert>
+
+    <!-- Read -->
+    <select id="selectUser" parameterType="String" resultType="user">
+        SELECT id, name, address, phone, is_admin
+        FROM USER
+        WHERE id = #{id}
+          AND password = #{password}
+    </select>
+
+    <select id="selectUserInfo" parameterType="String" resultType="user">
+        SELECT id, password, name, address, phone, is_admin
+        FROM USER
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectCount" resultType="int">
+        SELECT COUNT(*)
+        FROM USER
+    </select>
+
+    <select id="selectUserList" resultType="user">
+        SELECT id, password, name, address, phone, is_admin
+        FROM USER
+    </select>
+
+    <!-- Update -->
+    <update id="updateUser" parameterType="user">
+        UPDATE USER
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="password != null">
+                PASSWORD = #{password},
+            </if>
+            <if test="address != null">
+                ADDRESS = #{address},
+            </if>
+            <if test="phone != null">
+                PHONE = #{phone}
+            </if>
+        </trim>
+        WHERE ID = #{id}
+    </update>
+
+    <!-- Delete -->
+    <delete id="deleteAll">
+        DELETE
+        FROM FAVORITE;
+        DELETE
+        FROM USER;
+    </delete>
+
+    <delete id="deleteUser" parameterType="String">
+        DELETE
+        FROM FAVORITE
+        WHERE USER_ID = #{id};
+        DELETE
+        FROM USER
+        WHERE ID = #{id};
+    </delete>
+</mapper>

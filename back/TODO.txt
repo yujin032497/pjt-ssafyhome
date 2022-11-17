@@ -1,0 +1,4 @@
+1. include 처리
+2. Board 부분 html 고치기 (jsp 2 html)
+3. Controller 처리.
+3. interceptor 처리

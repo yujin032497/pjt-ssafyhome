@@ -1,0 +1,190 @@
+
+
+
+* {
+    font-family: ".SF NS";
+    /*font-family: "Arial Black", sans-serif;*/
+}
+
+/*header시작*/
+.headerBackground {
+    background-color: #2c2c2c;
+    height: 44px;
+    width: 100%;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+}
+.navBtnBox{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end !important;
+    margin-right: 40px;
+}
+.navBtn{
+    background-color: transparent;
+    border: transparent;
+    color: white;
+    margin-right: 20px;
+}
+.navBtn:hover{
+    color: lightpink;
+}
+.nav{
+    width: 600px;
+    display: flex;
+    justify-items: flex-start !important;
+
+}
+.navbar-nav{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-items: flex-start !important;
+    font-size: 17px;
+    color: white;
+    margin-left: 200px;
+}
+.nav-item{
+    width: 150px !important;
+    margin-right: 40px;
+}
+.nav-item:hover{
+    color: #ff7891;
+}  
+/*header끝*/
+/*ㅇㅇ시 ㅇㅇ구 ㅇㅇ동 배너 시작*/
+.darkBackgroundSection {
+    height: 200px;
+    background-color: #2c2c2c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.darkBackgroundSection>.container-fluid>.sorting-filters>.form-inline {
+    display: flex;
+    flex-direction: row;
+}
+
+.darkBackgroundSection>.container-fluid>.sorting-filters>.form-inline>.form-group
+    {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+/*검색버튼*/
+.searchBtn {
+    border: none;
+    width: 80px;
+    border-radius: 5px;
+    height: 39px;
+    background-color: white;
+}
+
+.searchBtn:hover {
+    background-color: #ff7891;
+    color: white;
+}
+/*ㅇㅇ시 ㅇㅇ구 ㅇㅇ동 배너 종료*/
+/*main시작*/
+.actualContainer {
+    margin-top: 50px;
+    margin-bottom: 200px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    flex-direction: row;
+}
+
+.actualContainer>.actualLeftInfoBox {
+    width: 100%;
+    height: 100%;
+    margin-left: 50px;
+    margin-right: 20px;
+}
+
+.infoBox {
+    border-bottom: #d1d1d1 1px solid;
+    border-top: #d1d1d1 1px solid;
+    padding: 15px 0 10px 0;
+    width: 800px;
+}
+
+.actualContainer>.actualLeftInfoBox>div>.pText {
+    font-size: 17px;
+    line-height: 20px;
+    margin: 0;
+}
+
+.actualContainer>.actualLeftInfoBox>div>.day {
+    font-size: 15px;
+    color: gray;
+}
+
+.actualContainer>.actualRightMapBox {
+    position: relative;
+    height: 100%;
+    margin-right: 50px;
+    width: 1000px;
+}
+
+#map {
+    position: relative;
+    top: 10%;
+}
+/*login main끝*/
+/*footer시작*/
+.footerContainer>.footerTop {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #ababab;
+    margin-top: 100px;
+}
+
+.footerContainer>.footerTop>img {
+    margin-top: -70px;
+}
+
+.footerTopText {
+    margin-top: 50px;
+    margin-left: 20px;
+    color: #2c2c2c;
+    line-height: 10px;
+}
+
+#findUs1 {
+    margin-left: 15px;
+}
+
+#findUs2 {
+    margin-left: 8px;
+}
+
+#findUs3 {
+    margin-left: 23px;
+    cursor: pointer;
+}
+
+.footerContainer>.footerBottom {
+    background-color: #2c2c2c;
+    height: 44px;
+    width: 100%;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footerContainer>.footerBottom>p {
+    color: white;
+    text-align: center;
+    margin-top: 13px;
+}
+/*footer종료*/

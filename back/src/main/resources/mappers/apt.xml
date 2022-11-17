@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pjt.model.mapper.AptDao">
+	<select id="selectApt" resultType="java.util.Map">
+		SELECT S.ROADNAME '도로명', S.ROADNAMEBONBUN '도로명건물본번호코드', S.APARTMENTNAME '아파트', S.DEALAMOUNT '거래금액', S.DEALYEAR '년', S.DEALMONTH '월', S.DEALDAY '일'
+				-- S.apartmentName, S.dong, S.lng, S.lat, D.DONGNAME, D.DONGCODE   
+				  FROM DONGCODE D  
+				  JOIN (SELECT H.APTCODE, I.DONGCODE, I.APARTMENTNAME, I.ROADNAME, I.LNG, I.LAT, H.DEALAMOUNT, H.DEALYEAR, H.DEALMONTH, H.DEALDAY, I.ROADNAMEBONBUN  
+					      FROM HOUSEDEAL H  
+				          JOIN HOUSEINFO I  
+				            ON I.APTCODE = H.APTCODE  
+						 WHERE H.DEALYEAR = #{year}
+				           AND H.DEALMONTH = #{month}
+					   ) S  
+					ON S.DONGCODE = D.DONGCODE  
+				 WHERE D.DONGCODE LIKE CONCAT(#{dongCode}, '%');
+	</select>
+</mapper>

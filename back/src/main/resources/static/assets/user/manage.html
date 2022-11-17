@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+            rel="stylesheet" />
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css"
+          rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet" />
+    <link href="/assets/css/manageUser.css" rel="stylesheet" />
+    <link href="/assets/img/home.png" rel="shortcut icon" type="image/x-icon">
+    <title>WhereIsMyHome</title>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<header>
+    <div class="include" data-html="nav.html"></div>
+</header>
+<section>
+    <div class="manageContainer">
+        <h2>회원 관리</h2>
+        <!-- <form class="inputBox" method="post" action="${root}/user"> -->
+        <div class="userContainer">
+            <div class="userListBox">
+                <table border='1' id="tbl">
+                    <thead>
+                    <th class="thColor">이름</th>
+                    <th class="thColor">ID</th>
+                    <th class="thColor">PW</th>
+                    <th class="thColor">address</th>
+                    <th class="thColor">phone</th>
+                    </thead>
+                    <tbody>
+                    <!-- TODO -->
+<!--                    <tr>-->
+<!--                        &lt;!&ndash; 첫번째 줄 시작 &ndash;&gt;-->
+<!--                        <td class="tdColor">${user.name}</td>-->
+<!--                        <td class="tdColor"><a-->
+<!--                                href="${ root }/user?action=detail&id=${user.id}">${user.id}</a>-->
+<!--                        </td>-->
+<!--                        <td class="tdColor">${user.password}</td>-->
+<!--                        <td class="tdColor">${user.address}</td>-->
+<!--                        <td class="tdColor">${user.phone}</td>-->
+<!--                    </tr>-->
+<!--                    <p>등록된 회원 정보가 없습니다.</p>-->
+<!--                    &lt;!&ndash; TODO &ndash;&gt;-->
+                    </tbody>
+                </table>
+            </div>
+            <div id="userBtnBox">
+                <button id="userRegistBtn" type="button"
+                        onclick="location.href='/assets/user/regist.html'">유저등록</button>
+                <form action="." method="post">
+                    <div id="searchBox">
+                        <input class="searchTxt" type="text" placeholder="검색어를 입력해 주세요">
+                        <button id="searchBtn" type="submit">검색</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="include" data-html="footer.html"></div>
+<script src="/assets/js/include.js"></script>
+<script src="/assets/js/nav.js"> </script>
+<script src="/assets/js/user.js"></script>
+<script>
+    window.onload = getUserList();
+</script>
+</body>
+</html>

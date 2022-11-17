@@ -1,0 +1,52 @@
+* {
+    font-family: ".SF NS";
+    /*font-family: "Arial Black", sans-serif;*/
+}
+
+/*header시작*/
+.headerBackground {
+    background-color: #2c2c2c;
+    height: 44px;
+    width: 100%;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+}
+.navBtnBox{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end !important;
+    margin-right: 40px;
+}
+.navBtn{
+    background-color: transparent;
+    border: transparent;
+    color: white;
+    margin-right: 20px;
+}
+.navBtn:hover{
+    color: lightpink;
+}
+.nav{
+    width: 600px;
+    display: flex;
+    justify-items: flex-start !important;
+
+}
+.navbar-nav{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-items: flex-start !important;
+    font-size: 17px;
+    color: white;
+    margin-left: 200px;
+}
+.nav-item{
+    width: 150px !important;
+    margin-right: 40px;
+}
+.nav-item:hover{
+    color: #ff7891;
+}  
+/*header끝*/

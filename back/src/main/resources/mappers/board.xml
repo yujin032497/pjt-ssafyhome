@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pjt.model.mapper.BoardDao">
+	
+	<resultMap type="board" id="article">
+		<result column="article_no" property="articleNo"/>
+		<result column="user_id" property="userId"/>
+		<result column="subject" property="subject"/>
+		<result column="content" property="content"/>
+		<result column="hit" property="hit"/>
+		<result column="register_time" property="registerTime"/>
+	</resultMap>
+	<resultMap type="board" id="boardAll" extends="article">
+		<result column="name" property="userName"/>
+	</resultMap>
+	<delete id="deleteAll">
+		DELETE
+		FROM board
+	</delete>
+	
+	<select id="getTotalArticle" resultType="int">
+		SELECT COUNT(*)
+		FROM board
+	</select>
+	
+	<sql id="search">
+		<if test="key != null">
+			<if test="key == 'subject'">
+				and subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key == 'author'">
+				and name like concat('%', #{word}, '%')
+			</if>
+		</if>
+	</sql>
+
+	<select id="getListArticle" parameterType="map" resultMap="boardAll">
+		select b.article_no, b.user_id, b.subject, b.content, b.hit, b.register_time, m.name
+		from board b, user m 
+		where b.user_id = m.id
+		<include refid="search"></include>
+		order by b.article_no desc
+		limit #{start}, #{listsize}
+	</select>
+	
+	<insert id="writeArticle" parameterType="board">
+		insert into board (user_id, subject, content, hit, register_time)
+		values (#{userId}, #{subject}, #{content}, 0, now())
+		<selectKey resultType="int" keyProperty="articleNo" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<select id="getArticle" parameterType="int" resultMap="boardAll">
+		select b.article_no, b.user_id, b.subject, b.content, b.hit, b.register_time, m.name 
+		from board b, user m
+		where b.user_id = m.id
+		and b.article_no = #{articleNo}
+	</select>
+	
+	<update id="updateHit" parameterType="int">
+		update board
+		set hit = hit + 1
+		where article_no = #{articleNo}
+	</update>
+	
+	<update id="updateArticle" parameterType="board">
+		update board
+		set subject = #{subject}, content = #{content}, register_time=now()
+		where article_no = #{articleNo}
+	</update>
+	
+	<delete id="deleteArticle" parameterType="int">
+		delete from board
+		where article_no = #{articleNo}
+	</delete>
+</mapper>

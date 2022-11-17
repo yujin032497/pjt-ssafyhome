@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="/assets/css/actualPrice.css" rel="stylesheet" />
+    <link href="./img/home.png" rel="shortcut icon" type="image/x-icon" />
+    <title>WhereIsMyHome</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+      body {
+        padding: 0px;
+        margin: 0px;
+      }
+
+      .backgroundVideoBox {
+        width: 100%;
+        height: 500px;
+        overflow: hidden;
+        margin: 0px auto;
+        position: relative;
+      }
+
+      video {
+        width: 100%;
+      }
+
+      .videoText {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+      }
+
+      .videoText p {
+        margin-top: -24px;
+        text-align: center;
+        font-size: 48px;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="include" data-html="nav.html"></div>
+    </header>
+    <section>
+      <div class="darkBackgroundSection">
+        <div class="container-fluid">
+          <div class="sorting-filters text-center mb-20 d-flex justify-content-center">
+            <form class="form-inline" id="frm" action="searchRecentHouseDeal.do">
+              <div class="form-group md">
+                <select class="form-select" name="gubn" id="gubn">
+                  <option value="">구분</option>
+                  <option value="apt">아파트</option>
+                  <option value="house">다세대주택</option>
+                </select>
+              </div>
+              <div class="form-group md">
+                <select class="form-select" name="city" id="sido">
+                  <option value="">도/광역시</option>
+                </select>
+              </div>
+              <div class="form-group md-1">
+                <select class="form-select" name="dongcode" id="gugun">
+                  <option value="">시/구/군</option>
+                </select>
+              </div>
+              <div class="form-group md-1">
+                <select class="form-select" name="dong" id="dong">
+                  <option value="">동</option>
+                </select>
+              </div>
+              <div class="form-group md-1">
+                <select class="form-select" name="year" id="year">
+                  <option value=""></option>
+                </select>
+              </div>
+              <div class="form-group md-1">
+                <select class="form-select" name="month" id="month">
+                  <option value="">매매월선택</option>
+                </select>
+              </div>
+            </form>
+            <button class="searchBtn" id="list-btn">검색</button>
+          </div>
+        </div>
+      </div>
+      <div class="actualContainer">
+        <div class="actualLeftInfoBox">
+          <h2>거래정보</h2>
+          <select class="form-select" name="sorting" id="sorting">
+            <option value="">정렬기준</option>
+            <option value="price" selected>매매금액순</option>
+            <option value="date">매매날짜순</option>
+          </select>
+          <div class="infoBox" id="infoBoxes">
+            <!--    거래정보 데이터 들어갈 껍데기-->
+          </div>
+        </div>
+        <div class="actualRightMapBox">
+          <!--      지도들어갈 껍데기-->
+          <div id="map" style="width: 1000px; height: 800px"></div>
+        </div>
+      </div>
+    </section>
+
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=ce0184ef09749b4e050bc88f25ec95ea&libraries=services"
+    ></script>
+
+    <script>
+      ///////////////////////// select box 설정 (지역, 매매기간) /////////////////////////
+      let date = new Date();
+
+      window.onload = function () {
+        let yearEl = document.querySelector("#year");
+        let yearOpt = `<option value="">매매년도선택</option>`;
+        let year = date.getFullYear();
+        for (let i = year; i > year - 20; i--) {
+          yearOpt += `<option value="${i}">${i}년</option>`;
+        }
+        yearEl.innerHTML = yearOpt;
+
+        // 브라우저가 열리면 시도정보 얻기.
+        sendRequest("sido", "*00000000");
+      };
+
+      document.querySelector("#year").addEventListener("change", function () {
+        let month = date.getMonth() + 1;
+        let monthEl = document.querySelector("#month");
+        let monthOpt = `<option value="">매매월선택</option>`;
+        let yearSel = document.querySelector("#year");
+        let m = yearSel[yearSel.selectedIndex].value == date.getFullYear() ? month : 13;
+        for (let i = 1; i < m; i++) {
+          monthOpt += `<option value="${i < 10 ? "0" + i : i}">${i}월</option>`;
+        }
+        monthEl.innerHTML = monthOpt;
+      });
+
+      // https://juso.dev/docs/reg-code-api/
+      // let url = "https://grpc-proxy-server-mkvo6j4wsq-du.a.run.app/v1/regcodes";
+      // let regcode = "*00000000";
+      // 전국 특별/광역시, 도
+      // https://grpc-proxy-server-mkvo6j4wsq-du.a.run.app/v1/regcodes?regcode_pattern=*00000000
+
+      // 시도가 바뀌면 구군정보 얻기.
+      document.querySelector("#sido").addEventListener("change", function () {
+        if (this[this.selectedIndex].value) {
+          let regcode = this[this.selectedIndex].value.substr(0, 2) + "*00000";
+          sendRequest("gugun", regcode);
+        } else {
+          initOption("gugun");
+          initOption("dong");
+        }
+      });
+
+      // 구군이 바뀌면 동정보 얻기.
+      document.querySelector("#gugun").addEventListener("change", function () {
+        if (this[this.selectedIndex].value) {
+          let regcode = this[this.selectedIndex].value.substr(0, 5) + "*";
+          sendRequest("dong", regcode);
+        } else {
+          initOption("dong");
+        }
+      });
+
+      function sendRequest(selid, regcode) {
+        const url = "https://grpc-proxy-server-mkvo6j4wsq-du.a.run.app/v1/regcodes";
+        let params = "regcode_pattern=" + regcode + "&is_ignore_zero=true";
+        fetch(`${url}?${params}`)
+          .then((response) => response.json())
+          .then((data) => addOption(selid, data));
+      }
+
+      // 시도 선택, 구군 선택 ,,,,
+      function addOption(selid, data) {
+        let opt = ``;
+        initOption(selid);
+        switch (selid) {
+          case "sido":
+            opt += `<option value="">시도선택</option>`;
+            data.regcodes.forEach(function (regcode) {
+              opt += `
+              <option value="${regcode.code}">${regcode.name}</option>
+              `;
+            });
+            break;
+          case "gugun":
+            opt += `<option value="">구군선택</option>`;
+            for (let i = 0; i < data.regcodes.length; i++) {
+              if (i != data.regcodes.length - 1) {
+                if (
+                  data.regcodes[i].name.split(" ")[1] == data.regcodes[i + 1].name.split(" ")[1] &&
+                  data.regcodes[i].name.split(" ").length != data.regcodes[i + 1].name.split(" ").length
+                ) {
+                  data.regcodes.splice(i, 1);
+                  i--;
+                }
+              }
+            }
+            let name = "";
+            data.regcodes.forEach(function (regcode) {
+              if (regcode.name.split(" ").length == 2) name = regcode.name.split(" ")[1];
+              else name = regcode.name.split(" ")[1] + " " + regcode.name.split(" ")[2];
+              opt += `
+              <option value="${regcode.code}">${name}</option>
+              `;
+            });
+            break;
+          case "dong":
+            opt += `<option value="">동선택</option>`;
+            let idx = 2;
+            data.regcodes.forEach(function (regcode) {
+              if (regcode.name.split(" ").length != 3) idx = 3;
+              opt += `
+              <option value="${regcode.code}">${regcode.name.split(" ")[idx]}</option>
+              `;
+            });
+        }
+        document.querySelector(`#${selid}`).innerHTML = opt;
+      }
+
+      function initOption(selid) {
+        let options = document.querySelector(`#${selid}`);
+        options.length = 0;
+        // let len = options.length;
+        // for (let i = len - 1; i >= 0; i--) {
+        //   options.remove(i);
+        // }
+      }
+
+      document.querySelector("#sorting").addEventListener("change", function () {
+        let sorting = this[this.selectedIndex].value;
+        if (sorting === "") {
+          return;
+        }
+        let selected = document.getElementById("gubn");
+        let url = "";
+        let queryParams = encodeURIComponent("serviceKey") + "=";
+
+        if (selected.value === "apt") {
+          //url = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
+          //queryParams += "C5RAypoIXCeQfU1sLG2XVJLRPwXPuvGeHkESeR5HHSQrnb9GCYmXFyXww9WvAmNVqDIYrb78l%2F2Wod9GXI%2FVZw%3D%3D";
+          url = "/api/apt/getActualPriceApt";
+
+        } else if (selected.value === "house") {
+          url =
+            "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcRHTrade";
+          queryParams +=
+            "C5RAypoIXCeQfU1sLG2XVJLRPwXPuvGeHkESeR5HHSQrnb9GCYmXFyXww9WvAmNVqDIYrb78l%2F2Wod9GXI%2FVZw%3D%3D"; /*Service Key*/
+        }
+
+        let gugunSel = document.querySelector("#gugun");
+        let regCode = gugunSel[gugunSel.selectedIndex].value.substr(0, 5);
+        let yearSel = document.querySelector("#year");
+        let year = yearSel[yearSel.selectedIndex].value;
+        let monthSel = document.querySelector("#month");
+        let month = monthSel[monthSel.selectedIndex].value;
+        let dealYM = year + month;
+
+        /*Service Key*/
+
+        queryParams += "&" + encodeURIComponent("LAWD_CD") + "=" + encodeURIComponent(regCode); /*아파트소재 구군*/
+        queryParams += "&" + encodeURIComponent("DEAL_YMD") + "=" + encodeURIComponent(dealYM); /*조회년월*/
+        if (selected.value === "apt") {
+          queryParams += "&" + "SORT" + "=" + sorting;
+        }
+
+        console.log(`${url}?${queryParams}`);
+        fetch(`${url}?${queryParams}`)
+          .then((response) => response.text())
+          .then((data) => {
+            console.log(data);
+            makeList(data);
+          });
+      });
+      ///////////////////////// 아파트 매매 정보 ////////////////////////
+
+      document.querySelector("#list-btn").addEventListener("click", function () {
+        let selected = document.getElementById("gubn");
+        let url = "";
+        let queryParams = encodeURIComponent("serviceKey") + "=";
+
+        if (selected.value === "apt") {
+          //url = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev";
+          //queryParams += "C5RAypoIXCeQfU1sLG2XVJLRPwXPuvGeHkESeR5HHSQrnb9GCYmXFyXww9WvAmNVqDIYrb78l%2F2Wod9GXI%2FVZw%3D%3D";
+//<<<<<<< HEAD
+          url = "/api/apt/getActualPriceApt";
+//=======
+          //url = "/rest";
+//>>>>>>> features/board
+          queryParams += "&action=getActualPriceApt";
+        } else if (selected.value === "house") {
+          url =
+            "http://openapi.molit.go.kr:8081/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcRHTrade";
+          queryParams +=
+            "C5RAypoIXCeQfU1sLG2XVJLRPwXPuvGeHkESeR5HHSQrnb9GCYmXFyXww9WvAmNVqDIYrb78l%2F2Wod9GXI%2FVZw%3D%3D"; /*Service Key*/
+        }
+
+        let gugunSel = document.querySelector("#gugun");
+        let regCode = gugunSel[gugunSel.selectedIndex].value.substr(0, 5);
+        let yearSel = document.querySelector("#year");
+        let year = yearSel[yearSel.selectedIndex].value;
+        let monthSel = document.querySelector("#month");
+        let month = monthSel[monthSel.selectedIndex].value;
+        let dealYM = year + month;
+
+        /*Service Key*/
+
+        queryParams += "&" + encodeURIComponent("LAWD_CD") + "=" + encodeURIComponent(regCode); /*아파트소재 구군*/
+        queryParams += "&" + encodeURIComponent("DEAL_YMD") + "=" + encodeURIComponent(dealYM); /*조회년월*/
+        if (selected.value === "apt") {
+          queryParams += "&" + "SORT" + "=" + document.querySelector("#sorting").value;
+        }
+
+        console.log(`${url}?${queryParams}`);
+        fetch(`${url}?${queryParams}`)
+          .then((response) => response.text())
+          .then((data) => {
+            console.log(data);
+            makeList(data);
+          });
+      });
+
+      function makeList(data) {
+        let tbody = document.querySelector("#aptlist");
+
+        let selected = document.getElementById("gubn");
+
+        let parser = new DOMParser();
+        const xml = parser.parseFromString(data, "application/xml");
+        // console.log(xml);
+        let apts = xml.querySelectorAll("item");
+
+        let positions = [];
+        let apartments = [];
+        let count = 0;
+
+        apts.forEach((apt) => {
+          let tr = document.createElement("tr");
+          let apt_addr = "";
+          if (selected.value === "apt") {
+            apt_addr =
+              apt.querySelector("도로명").textContent + " " + apt.querySelector("도로명건물본번호코드").textContent;
+          } else if (selected.value === "house") {
+            apt_addr = apt.querySelector("법정동").textContent + " " + apt.querySelector("지번").textContent;
+          }
+
+          console.log(apt_addr);
+
+          let flag = false;
+          for (let k = 0; k < positions.length; k++) {
+            if (positions[k].addr == apt_addr) {
+              flag = true;
+            }
+          }
+
+          let position;
+          if (selected.value === "apt") {
+            position = {
+              addr: apt_addr,
+              content: apt.querySelector("아파트").textContent,
+            };
+          } else if (selected.value === "house") {
+            position = {
+              addr: apt_addr,
+              content: apt.querySelector("연립다세대").textContent,
+            };
+          }
+
+          if (!flag) {
+            positions.push(position);
+          }
+
+          let apartment;
+          if (selected.value === "apt") {
+            apartment = {
+              content: apt.querySelector("아파트").textContent,
+              price: apt.querySelector("거래금액").textContent,
+              //area: apt.querySelector("전용면적").textContent,
+              year: apt.querySelector("년").textContent,
+              month: apt.querySelector("월").textContent,
+              day: apt.querySelector("일").textContent,
+            };
+          } else if (selected.value === "house") {
+            apartment = {
+              content: apt.querySelector("연립다세대").textContent,
+              price: apt.querySelector("거래금액").textContent,
+              area: apt.querySelector("대지권면적").textContent,
+              year: apt.querySelector("년").textContent,
+              month: apt.querySelector("월").textContent,
+              day: apt.querySelector("일").textContent,
+            };
+          }
+
+          apartments.push(apartment);
+        });
+
+        let contentLeftPollDiv = document.querySelector("#infoBoxes");
+
+        let info2 = "";
+        for (let j = 0; j < apartments.length; j++) {
+          info2 += `<div class="info">
+              <h4>${apartments[j].content}</h4>
+             <p class="pText">거래금액 : ${apartments[j].price}만원</p>
+             <!--<p class="pText">면적 :  ${apartments[j].area}</p>-->
+             <p class="day">${apartments[j].year}년 ${apartments[j].month}월 ${apartments[j].day}일</p>
+             </div>`;
+          console.log(apartments[j].month);
+        }
+        contentLeftPollDiv.innerHTML = info2;
+
+        var mapContainer = document.getElementById("map"), // 지도를 표시할 div
+          mapOption = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            level: 6, // 지도의 확대 레벨
+          };
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        for (let i = 0; i < positions.length; i++) {
+          // 주소-좌표 변환 객체를 생성합니다
+          var geocoder = new kakao.maps.services.Geocoder();
+          // 주소로 좌표를 검색합니다
+
+          geocoder.addressSearch(positions[i].addr, function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === kakao.maps.services.Status.OK) {
+              var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+              // 결과값으로 받은 위치를 마커로 표시합니다
+              var marker = new kakao.maps.Marker({
+                map: map,
+                position: coords,
+              });
+
+              // 마커를 클릭했을 때 마커 위에 표시할 인포윈도우를 생성합니다
+              var iwContent = positions[i].content, // 인포윈도우에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+                iwRemoveable = true; // removeable 속성을 ture 로 설정하면 인포윈도우를 닫을 수 있는 x버튼이 표시됩니다
+
+              // 인포윈도우를 생성합니다
+              var infowindow = new kakao.maps.InfoWindow({
+                content: '<div style="width:100%; padding:5px;">' + iwContent + "</div>",
+                removable: iwRemoveable,
+              });
+
+              // 마커에 클릭이벤트를 등록합니다
+              kakao.maps.event.addListener(marker, "click", function () {
+                // 마커 위에 인포윈도우를 표시합니다
+                infowindow.open(map, marker);
+                // 거래 정보 추가하기
+                let info = `<div>
+                        <h4>${iwContent}</h4>
+                        </div>`;
+                for (let j = 0; j < apartments.length; j++) {
+                  if (apartments[j].content == iwContent) {
+                    info += `<div class="info">
+                        <p class="pText">거래금액 : ${apartments[j].price}만원</p>
+                        <!--<p class="pText">면적 :  ${apartments[j].area}</p> -->
+                        <p class="day">${apartments[j].year}년 ${apartments[j].month}월 ${apartments[j].day}일</p>
+                        </div>`;
+                    console.log(info);
+                    contentLeftPollDiv.innerHTML = info;
+                  }
+                }
+              });
+
+              map.setCenter(coords);
+            }
+          });
+        }
+      }
+    </script>
+    <script src="/assets/js/include.js"></script>
+    <script src="/assets/js/nav.js"> </script>
+    <script src="/assets/js/user.js"></script>
+  </body>
+</html>

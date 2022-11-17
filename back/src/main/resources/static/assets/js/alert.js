@@ -1,0 +1,3 @@
+if(msg){
+	alert(msg);
+}

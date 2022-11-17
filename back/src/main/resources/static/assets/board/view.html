@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    <title>공지사항-상세페이지</title>
+  </head>
+  <body>
+    <header>
+      <div class="include" data-html="nav.html"></div>
+    </header>
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+          <h2 class="my-3 py-3 shadow-sm bg-light text-center">
+            <mark class="sky">글보기</mark>
+          </h2>
+        </div>
+        <div id="article">
+
+        </div>
+        <!-- <div class="col-lg-8 col-md-10 col-sm-12">
+          <div class="row my-2">
+            <h2 class="text-secondary px-5">${ article.articleNo }. ${ article.subject }</h2>
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="clearfix align-content-center">
+                <img
+                  class="avatar me-2 float-md-start bg-light p-2"
+                  src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg"
+                />
+                <p>
+                  <span class="fw-bold">${ article.userId }</span> <br />
+                  <span class="text-secondary fw-light"> ${ article.registerTime } 조회 : ${ article.hit } </span>
+                </p>
+              </div>
+            </div>
+            <div class="col-md-4 align-self-center text-end"></div>
+            <div class="divider mb-3"></div>
+            <div class="text-secondary">
+              ${ article.content }
+            </div> -->
+            <div class="divider mt-3 mb-3"></div>
+            <div class="d-flex justify-content-end">
+              <button type="button" id="btn-list" class="btn btn-outline-primary mb-3">
+                글목록
+              </button>
+              <button type="button" id="btn-mv-modify" class="btn btn-outline-success mb-3 ms-1">
+                글수정
+              </button>
+              <button type="button" id="btn-delete" class="btn btn-outline-danger mb-3 ms-1">
+                글삭제
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form id="form-param" method="get" action="">
+      <input type="hidden" id="act" name="act" value="">
+      <input type="hidden" id="pgno" name="pgno" value="${ qs.pgno }">
+      <input type="hidden" id="key" name="key" value="${ qs.key }">
+      <input type="hidden" id="word" name="word" value="${ qs.word }">
+    </form>
+    <form id="form-no-param" method="get" action="${root}/board">
+      <input type="hidden" id="nact" name="act" value="">
+      <input type="hidden" id="npgno" name="pgno" value="${ qs.pgno }">
+      <input type="hidden" id="nkey" name="key" value="${ qs.key }">
+      <input type="hidden" id="nword" name="word" value="${ qs.word }">
+      <input type="hidden" id="articleno" name="articleno" value="${ article.articleNo }">
+    </form>
+    <div class="include" data-html="footer.html"></div>
+    <script>
+        let apiRoot = "/api/board";
+        let boardId = '';
+        window.onload = function () {
+            boardId = window.location.search.split("=")[1];
+            let userJson = JSON.parse(sessionStorage.getItem("loginUser"));
+
+            fetch(`${apiRoot}/view/${boardId}`)
+            .then((response) => response.json())
+            .then((data) => makeView(data));
+            console.log(userJson.id);
+            console.log(`${article.userId}`);
+
+            function makeView(article) {
+                console.log(article);
+                if(`${article.userId}` == userJson.id || userJson.id==="admin") {
+                    console.log("여기");
+                    document.querySelector(`#btn-mv-modify`).setAttribute("style", "display: ;");
+                    document.querySelector(`#btn-delete`).setAttribute("style", "display: ;");
+                
+                } else {
+                    document.querySelector(`#btn-mv-modify`).setAttribute("style", "display: none;");
+                    document.querySelector(`#btn-delete`).setAttribute("style", "display: none;");
+                }
+                let content = ``;
+                content += `
+                <div class="col-lg-8 col-md-10 col-sm-12">
+                    <div class="row my-2">
+                      <h2 class="text-secondary px-5">${ article.articleNo }. ${ article.subject }</h2>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-8">
+                        <div class="clearfix align-content-center">
+                          <img
+                            class="avatar me-2 float-md-start bg-light p-2"
+                            src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg"
+                          />
+                          <p>
+                            <span class="fw-bold">${ article.userId }</span> <br />
+                            <span class="text-secondary fw-light"> ${ article.registerTime } 조회 : ${ article.hit } </span>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="col-md-4 align-self-center text-end"></div>
+                      <div class="divider mb-3"></div>
+                      <div class="text-secondary">
+                        ${ article.content }
+                      </div>`
+                      document.querySelector("#article").innerHTML = content;
+
+            }
+        }
+        document.querySelector("#btn-list").addEventListener("click", function () {
+            location.href = "/assets/board/list.html";
+            //let form = document.querySelector("#form-param");
+            //document.querySelector("#act").value = "list";
+            //form.setAttribute("action", "${root}/board");
+            //form.submit();
+        });
+        
+        document.querySelector("#btn-mv-modify").addEventListener("click", function () {
+            location.href = `/assets/board/modify.html?boardId=${boardId}`;
+            //let form = document.querySelector("#form-no-param");
+            //document.querySelector("#nact").value = "mvmodify";
+            //form.setAttribute("action", "${root}/board");
+            //form.submit();
+        });
+        
+        document.querySelector("#btn-delete").addEventListener("click", function () {
+            if(confirm("정말 삭제하시겠습니까?")) {
+                // 게시글 정보 삭제
+                let articleNo = `${boardId}`;
+                let config = {
+	                method: "DELETE",
+	                headers: { "Content-Type": "application/json" },
+                };
+                fetch(`${apiRoot}/${articleNo}`, config)
+                .then((response) => {
+                    console.log(response);
+                    if (response.status === 200) {
+                        alert('게시글이 삭제되었습니다.');
+                        location.href = `/assets/board/list.html`;
+                    } else {
+                        console.log("error");
+                        alert("서버가 응답하지 않습니다.");
+                    }
+                });
+            //let form = document.querySelector("#form-no-param");
+            //document.querySelector("#nact").value = "delete";
+            //form.setAttribute("action", "${root}/board");
+            //form.submit();
+            }
+        });
+
+    </script>
+    <script src="/assets/js/include.js"></script>
+    <script src="/assets/js/nav.js"> </script>
+    <script src="/assets/js/user.js"></script>
+    </body>
+</html>

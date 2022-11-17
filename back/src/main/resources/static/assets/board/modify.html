@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css"
+      rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet" />
+    <link href="../style/actualPrice.css" rel="stylesheet" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <link href="https://getbootstrap.com/docs/5.2/assets/css/docs.css"
+      rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet" />
+    <link href="style/actualPrice.css" rel="stylesheet" />
+    <title>공지사항-수정페이지</title>
+  </head>
+  <body>
+    <header>
+      <div class="include" data-html="nav.html"></div>
+        </header>
+          <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10 col-sm-12">
+              <h2 class="my-3 py-3 shadow-sm bg-light text-center">
+                <mark class="sky">글수정</mark>
+              </h2>
+            </div>
+            <div class="col-lg-8 col-md-10 col-sm-12">
+              <form id="form-modify" method="" action="">
+                <div id="article">
+
+                </div>
+                <!-- <input type="hidden" name="act" value="modify"> -->
+                <!-- <input type="hidden" name="articleno" value="${ article.articleNo }">
+                <div class="mb-3">
+                  <label for="subject" class="form-label">제목 : </label>
+                  <input type="text" class="form-control" id="subject" name="subject" value="${ article.subject }" />
+                </div>
+                <div class="mb-3">
+                  <label for="content" class="form-label">내용 : </label>
+                  <textarea class="form-control" id="content" name="content" rows="7">${ article.content }</textarea>
+                </div> -->
+                <div class="col-auto text-center">
+                  <button type="button" id="btn-modify" class="btn btn-outline-primary mb-3">
+                    글수정
+                  </button>
+                  <button type="button" id="btn-list" class="btn btn-outline-danger mb-3">
+                    목록으로이동...
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="include" data-html="footer.html"></div>
+        <script>
+          let apiRoot = "";
+          window.onload = function () {
+            apiRoot = "/api/board";
+            const boardId = window.location.search.split("=")[1];
+
+            fetch(`${apiRoot}/view/${boardId}`)
+            .then((response) => response.json())
+            .then((data) => makeView(data));
+            console.log(boardId)
+
+            function makeView(article) {
+                console.log(article);
+                if(`${article.articleNo} === boardId`) {
+                    console.log("여기");
+                    let articleContent = ``;
+                    articleContent += `
+                    <input type="hidden" name="articleno" id="articleNo" value="${ article.articleNo }">
+                    <div class="mb-3">
+                      <label for="subject" class="form-label">제목 : </label>
+                      <input type="text" class="form-control" id="subject" name="subject" value="${ article.subject }" />
+                    </div>
+                    <div class="mb-3">
+                      <label for="content" class="form-label">내용 : </label>
+                      <textarea class="form-control" id="content" name="content" rows="7">${ article.content }</textarea>
+                    </div>`;
+                    document.querySelector("#article").innerHTML = articleContent;
+                }
+            }
+          }
+          document.querySelector("#btn-modify").addEventListener("click", function () {
+            if (!document.querySelector("#subject").value) {
+              alert("제목 입력!!");
+
+            } else if (!document.querySelector("#content").value) {
+              alert("내용 입력!!");
+
+            } else {
+              let articleNo = document.querySelector(`#articleNo`).value;
+              let subject = document.querySelector(`#subject`).value;
+              let content = document.querySelector(`#content`).value;
+              console.log(articleNo);
+              let modifyinfo = {
+                articleNo: articleNo,
+                subject: subject,
+                content: content,
+              };
+              let config = {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(modifyinfo),
+              };
+              fetch(`${apiRoot}/article`, config)
+              .then((response) => {
+                console.log(response);
+                if (response.status === 200) {
+                    alert('게시글이 수정되었습니다.');
+                    location.href = `/assets/board/view.html?boardId=${articleNo}`;
+                } else {
+                    console.log("error");
+                    alert("서버가 응답하지 않습니다.");
+                }
+            });
+              //let form = document.querySelector("#form-modify");
+              //form.setAttribute("action", "${root}/board");
+              //form.submit();
+            }
+          });
+          
+          document.querySelector("#btn-list").addEventListener("click", function () {
+            if(confirm("취소를 하시면 작성중인 글은 삭제됩니다.\n취소하시겠습니까?")) {
+              location.href = "/assets/board/list.html";
+              //location.href = "${root}/board?act=list";
+               }
+            });
+      </script>
+      <script src="/assets/js/include.js"></script>
+      <script src="/assets/js/nav.js"> </script>
+      <script src="/assets/js/user.js"></script>
+  </body>
+</html>
+  
+

@@ -162,7 +162,7 @@ export default new Vuex.Store({
         .get(
           `/board/list?key=${payload.key ? payload.key : null}&value=${
             payload.value ? payload.value : ""
-          }`,
+          }&pgno=${payload.pgno}&spp=${payload.spp}`,
           payload,
         )
         .then((response) => {

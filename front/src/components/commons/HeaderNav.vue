@@ -7,7 +7,7 @@
 
       <b-navbar-nav>
         <b-nav-item href="/house" class="text-white">실거래가 조회</b-nav-item>
-        <b-nav-item href="/board/faq" class="text-white">FAQ</b-nav-item>
+        <b-nav-item href="/board" class="text-white">FAQ</b-nav-item>
         <b-nav-item href="/board/qna" class="text-white"
           >1:1 문의하기</b-nav-item
         >

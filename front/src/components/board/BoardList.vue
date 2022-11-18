@@ -3,7 +3,7 @@
     <b-container class="my-auto">
       <b-row>
         <b-col class="text-center">
-          <h3 class="underline">글목록</h3>
+          <h3 class="underline">FAQ</h3>
         </b-col>
       </b-row>
       <b-row class="mb-1">
@@ -28,7 +28,7 @@
           <b-table-simple hover responsive>
             <b-thead head-variant="dark">
               <b-tr class="text-center">
-                <b-th>글번호</b-th>
+                <b-th>번호</b-th>
                 <b-th>제목</b-th>
                 <b-th>작성자</b-th>
                 <b-th>조회수</b-th>
@@ -50,6 +50,16 @@
         <b-col v-else class="text-center">등록된 게시글이 없습니다.</b-col>
       </b-row>
     </b-container>
+    <div class="overflow-auto">
+      <b-pagination-nav
+        v-model="pgno"
+        :link-gen="linkGen"
+        :number-of-pages="10"
+        use-router
+        first-number
+        last-number
+        align="center"></b-pagination-nav>
+    </div>
   </div>
 </template>
 
@@ -61,6 +71,8 @@ export default {
     return {
       selected: null,
       searchVal: "",
+      pgno: 1,
+      spp: 10,
       options: [
         { value: null, text: "분류 선택" },
         { value: "author", text: "작성자" },
@@ -80,15 +92,28 @@ export default {
       console.log("눌렀는데 안된거임.");
       console.log(this.selected);
       console.log(this.searchVal);
+      console.log(this.pg);
       if (this.selected !== null && this.searchVal !== "") {
         const payload = {
           key: this.selected,
           value: this.searchVal,
+          pg: this.pg,
+          spp: this.spp,
         };
         this.getBoards(payload);
       } else {
         this.getBoards({});
       }
+    },
+    linkGen(pageNum) {
+      const payload = {
+        key: this.selected,
+        value: this.searchVal,
+        pgno: this.pgno,
+        spp: this.spp,
+      };
+      this.getBoards(payload);
+      return pageNum === 1 ? "?" : `?page=${pageNum}`;
     },
   },
 

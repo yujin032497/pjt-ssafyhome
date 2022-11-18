@@ -11,28 +11,30 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/board", // 게시판
+    path: "/board", // FAQ
     name: "Board",
-    redirect: "/board",
+    redirect: "/board/list",
     component: () => import("@/views/CommonView.vue"),
     children: [
       {
-        path: "/faq",
-        name: "FAQ",
-        redirect: "/board/faq/list",
-        component: () => import("@/views/CommonView.vue"),
-        children: [
-          //CRUD
-        ],
+        path: "list",
+        name: "BoardList",
+        component: () => import("@/components/board/BoardList.vue"),
       },
       {
-        path: "/qna",
-        name: "QNA",
-        redirect: "/board/qna/list",
-        component: () => import("@/views/CommonView.vue"),
-        children: [
-          //CRUD
-        ],
+        path: "detail/:articleNo",
+        name: "BoardDetail",
+        component: () => import("@/components/board/BoardDetail.vue"),
+      },
+      {
+        path: "write",
+        name: "BoardWrite",
+        component: () => import("@/components/board/BoardWrite.vue"),
+      },
+      {
+        path: "modify/:articleNo",
+        name: "BoardModify",
+        component: () => import("@/components/board/BoardModify.vue"),
       },
     ],
   },

@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="lg" type="dark" class="nav-bg" variant="dark">
+  <b-navbar toggleable="lg" class="bg-nav">
     <b-navbar-brand href="/">
       <img src="@/assets/img/home.png" class="logo" />
     </b-navbar-brand>
@@ -91,9 +91,7 @@ export default {
   width: 25px;
   height: 25px;
 }
-
-.now-position > a {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
+.bg-nav {
+  background-color: var(--deep-skyblue) !important;
 }
 </style>

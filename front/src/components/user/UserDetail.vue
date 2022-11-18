@@ -53,7 +53,7 @@
               type="text"
               id="usertel"
               placeholder="전화번호(-포함)"
-              v-model="input.tel"
+              v-model="input.phone"
               readonly="readonly" />
           </div>
         </div>
@@ -84,7 +84,7 @@ export default {
     moveDelete() {
       const payload = {
         id: this.input.id,
-        callback: () => {
+        cb: () => {
           if (this.loginUser.id === "ssafyadmin") {
             alert("삭제되었습니다.");
             this.$router.push({ name: "home" });
@@ -107,7 +107,9 @@ export default {
   created() {
     const userId = this.$route.params.id;
     const payload = {
-      userId,
+      data: {
+        userId,
+      },
       err: () => {
         this.$router.push({ name: "home" });
       },

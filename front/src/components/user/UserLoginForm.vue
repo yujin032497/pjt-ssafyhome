@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="d-flex justify-content-center h-100">
-      <b-card title="회원가입" class="h-auto w-auto mt-auto mb-auto">
+      <b-card title="로그인" class="h-auto w-auto mt-auto mb-auto">
         <b-card-body>
           <div class="input-group form-group">
             <div class="input-group-prepend">
@@ -36,9 +36,7 @@
           </p>
 
           <div class="float-right">
-            <button
-              class="login_btn btn p-sm-1 mr-1"
-              onclick="location.href='signup.jsp'">
+            <button class="login_btn btn p-sm-1 mr-1" @click="moveRegist">
               회원가입
             </button>
             <button
@@ -83,6 +81,9 @@ export default {
     },
     moveHome() {
       this.$router.push({ name: "home" });
+    },
+    moveRegist() {
+      this.$router.push({ path: "/user/regist" });
     },
   },
   computed: {

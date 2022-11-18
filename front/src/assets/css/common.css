@@ -1,4 +1,4 @@
-.bg-nav {
+:root {
     --deep-skyblue: #92C2FF;
     --skyblue: #BDE0FE;
     --deep-pink: #FFAFCC;
@@ -7,10 +7,41 @@
     --font-color: #616161;
 }
 
+.title {
+    font-family: "Cafe24Dangdanghae", serif !important;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.sub-title{
+    font-family: "LINESeedKR-Bd", serif !important;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.content {
+    font-family: "Pretendard-Regular", serif !important;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.sub-content{
+    font-family: "Pretendard-Regular", serif !important;
+    font-weight: 300;
+    font-style: normal;
+}
+
 body {
     font-family: "Pretendard-Regular", serif !important;
     font-weight: 500;
     color: #555555;
+}
+
+@font-face {
+    font-family: 'LINESeedKR-Bd';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_11-01@1.0/LINESeedKR-Bd.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
 }
 
 @font-face {
@@ -26,3 +57,4 @@ body {
     font-weight: normal;
     font-style: normal;
 }
+

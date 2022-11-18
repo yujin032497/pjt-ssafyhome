@@ -20,7 +20,7 @@
           type="password"
           id="userpw"
           placeholder="비밀번호(6자리 이상)"
-          v-model="input.pw" />
+          v-model="input.password" />
       </div>
     </div>
     <p class="text-danger text-alert" v-show="!isPwPos">
@@ -64,7 +64,7 @@
           type="text"
           id="usertel"
           placeholder="전화번호(-포함)"
-          v-model="input.tel" />
+          v-model="input.phone" />
       </div>
     </div>
     <p class="text-danger text-alert" v-show="!isTelPos">
@@ -75,7 +75,7 @@
       <button class="login_btn btn p-sm-1 mr-1" @click="submitAccount">
         {{ type === "regist" ? "회원가입" : "회원수정" }}
       </button>
-      <button class="login_btn btn p-sm-1">취소</button>
+      <button class="login_btn btn p-sm-1" @click="moveHome">취소</button>
     </div>
   </b-card-body>
 </template>
@@ -104,12 +104,15 @@ export default {
       updateAccount: "updateAccount",
       logout: "logout",
     }),
+    moveHome() {
+      this.$router.push({ name: "home" });
+    },
     checkValidate() {
       this.isIdPos = this.input.id !== "";
-      this.isPwPos = this.input.pw && this.input.pw.length >= 6;
+      this.isPwPos = this.input.password && this.input.password.length >= 6;
       this.isNamePos = this.input.name !== "";
       this.isAddrPos = this.input.address !== "";
-      this.isTelPos = this.input.tel.length >= 11;
+      this.isTelPos = this.input.phone.length >= 11;
 
       return (
         this.isIdPos &&
@@ -125,7 +128,7 @@ export default {
         if (this.type === "regist") {
           this.createAccount({
             account: this.input,
-            callback: () => {
+            cb: () => {
               alert("회원가입되었습니다.");
               this.$router.push({ name: "home" });
             },
@@ -133,7 +136,7 @@ export default {
         } else {
           this.updateAccount({
             account: this.input,
-            callback: () => {
+            cb: () => {
               this.logout({
                 callback: () => {
                   alert(
@@ -152,7 +155,7 @@ export default {
     if (this.type === "modify") {
       const userId = this.$route.params.id;
       const payload = {
-        userId,
+        data: { userId: userId },
         err: () => {
           this.$router.push({ name: "home" });
         },

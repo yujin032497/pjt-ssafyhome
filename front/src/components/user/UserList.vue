@@ -16,7 +16,7 @@
             >
           </template>
           <template #cell(삭제)="data">
-            <b-button class="p-sm-1 mr-1 btn-user" @click="moveDelete(data.id)"
+            <b-button class="p-sm-1 mr-1 btn-user" @click="moveDelete(data)"
               >삭제</b-button
             >
           </template>
@@ -37,22 +37,32 @@ export default {
           key: "id",
           label: "ID",
         },
-        { key: "pw", label: "패스워드" },
+        { key: "password", label: "패스워드" },
         { key: "name", label: "이름" },
         { key: "address", label: "주소" },
-        { key: "tel", label: "전화번호" },
+        { key: "phone", label: "전화번호" },
         "수정",
         "삭제",
       ],
     };
   },
   methods: {
-    ...mapActions({ selectAccountList: "selectAccountList" }),
+    ...mapActions({
+      selectAccountList: "selectAccountList",
+      deleteAccount: "deleteAccount",
+    }),
     moveModify(data) {
-      console.log(data.item.id);
+      const userId = data.item.id;
+      this.$router.push({ path: `/user/modify/${userId}` });
     },
-    moveDelete(id) {
-      console.log(id + "삭제");
+    moveDelete(data) {
+      const userId = data.item.id;
+      this.deleteAccount({
+        id: userId,
+        cb: () => {
+          this.$router.push({ name: "home" });
+        },
+      });
     },
     rowStriped(item, type) {
       if (!item || type !== "row") return;

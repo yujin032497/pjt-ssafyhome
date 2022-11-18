@@ -58,21 +58,34 @@ export default new Vuex.Store({
   },
   actions: {
     getUser(context, payload) {
-      console.log(payload);
-      http.post("/user/login", payload.user).then((response) => {
-        switch (response.status) {
-          case 200:
-            console.log(response.data);
-            sessionStorage.setItem("loginUser", JSON.stringify(response.data));
-            context.commit({ type: "USER", loginUser: response.data });
-            payload.callback();
-            break;
-          case 500:
-            alert("내부 서버 오류");
-            payload.callback();
-            break;
-        }
-      });
+      http
+        .post("/user/login", payload.user)
+        .then((response) => {
+          console.log(response.status);
+          switch (response.status) {
+            case 200:
+              console.log(response.data);
+              sessionStorage.setItem(
+                "loginUser",
+                JSON.stringify(response.data),
+              );
+              context.commit({ type: "USER", loginUser: response.data });
+              payload.callback();
+              break;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          switch (err.response.status) {
+            case 401:
+              alert("로그인 실패! 아이디와 비밀번호를 확인하세요.");
+              break;
+            case 500:
+              alert("내부 서버 에러!");
+              payload.callback();
+              break;
+          }
+        });
     },
 
     logout(context, payload) {
@@ -83,194 +96,64 @@ export default new Vuex.Store({
 
     createAccount(context, payload) {
       console.log("axios 통신 작업");
-
-      let response = {
-        status: 200,
-      };
-
-      switch (response.status) {
-        case 200:
-          payload.callback("regist");
-          break;
-        case 500:
-          alert("내부 서버 오류");
-          payload.err();
-          break;
-      }
+      console.log(payload);
+      http.post("/user/regist", payload.account).then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 201:
+            payload.cb();
+            break;
+          case 500:
+            alert("내부 서버 오류");
+            payload.err();
+            break;
+        }
+      });
     },
 
     selectAccount(context, payload) {
-      console.log("axios 통신작업");
-      console.log(payload);
-
-      let response = {
-        status: 200,
-        data: {
-          id: "idtest1",
-          name: "테스트용",
-          address: "주소테스트1",
-          tel: "010-1234-5678",
-        },
-      };
-
-      switch (response.status) {
-        case 200:
-          context.commit({ type: "ACCOUNT", account: response.data });
-          break;
-        case 500:
-          alert("내부 서버 에러");
-          payload.err();
-          break;
-      }
+      http.get(`/user/detail/${payload.data.userId}`).then((response) => {
+        switch (response.status) {
+          case 200:
+            context.commit({ type: "ACCOUNT", account: response.data });
+            break;
+          case 500:
+            alert("내부 서버 에러");
+            payload.err();
+            break;
+        }
+      });
     },
 
     selectAccountList(context) {
-      console.log("axios 통신작업");
-
-      let response = {
-        status: 200,
-        data: [
-          {
-            id: "목업1",
-            pw: "패스워드테스트1",
-            name: "이름목업1",
-            address: "목업시 목업구 목업동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트",
-            name: "이름목업",
-            address: "서울시 서대문구 서초동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스",
-            name: "이름목업1",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테",
-            name: "이름목",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트1",
-            name: "이름목업1",
-            address: "목업시 목업구 목업동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트",
-            name: "이름목업",
-            address: "서울시 서대문구 서초동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스",
-            name: "이름목업1",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테",
-            name: "이름목",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트1",
-            name: "이름목업1",
-            address: "목업시 목업구 목업동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트",
-            name: "이름목업",
-            address: "서울시 서대문구 서초동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스",
-            name: "이름목업1",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테",
-            name: "이름목",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트1",
-            name: "이름목업1",
-            address: "목업시 목업구 목업동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스트",
-            name: "이름목업",
-            address: "서울시 서대문구 서초동",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테스",
-            name: "이름목업1",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-          {
-            id: "목업1",
-            pw: "패스워드테",
-            name: "이름목",
-            address: "목업시 목업동 목업구",
-            tel: "010-1111-1111",
-          },
-        ],
-      };
-
-      switch (response.status) {
-        case 200:
-          context.commit({ type: "ACCOUNTS", accounts: response.data });
-          break;
-        case 500:
-          alert("내부 서버 에러");
-          break;
-      }
+      http.get("/user/list").then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            context.commit({ type: "ACCOUNTS", accounts: response.data });
+            break;
+          case 500:
+            alert("내부 서버 에러");
+            break;
+        }
+      });
     },
 
     updateAccount(context, payload) {
       console.log("axios 통신 작업");
-
-      let response = {
-        status: 200,
-      };
-
-      switch (response.status) {
-        case 200:
-          payload.callback("modify");
-          break;
-        case 500:
-          alert("내부 서버 오류");
-          payload.err();
-          break;
-      }
+      console.log(payload);
+      http.put("/user/modify", payload.account).then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            payload.cb();
+            break;
+          case 500:
+            alert("내부 서버 오류");
+            payload.err();
+            break;
+        }
+      });
     },
 
     getBoards(context, payload) {
@@ -329,7 +212,6 @@ export default new Vuex.Store({
             alert("등록 되었습니다.");
             payload.callback();
             break;
-
           case 400:
             alert("잘못된 요청입니다.");
             break;
@@ -382,21 +264,19 @@ export default new Vuex.Store({
     },
 
     deleteAccount(context, payload) {
-      console.log("axios 통신 작업");
-
-      let response = {
-        status: 200,
-      };
-
-      switch (response.status) {
-        case 200:
-          payload.callback();
-          break;
-        case 500:
-          alert("내부 서버 오류");
-          payload.callback();
-          break;
-      }
+      http.delete(`/user/delete/${payload.id}`).then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            alert("삭제되었습니다!");
+            payload.cb();
+            break;
+          case 500:
+            alert("내부 서버 오류");
+            payload.cb();
+            break;
+        }
+      });
     },
   },
   modules: {},

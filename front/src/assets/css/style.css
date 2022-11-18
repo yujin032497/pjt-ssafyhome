@@ -5,6 +5,15 @@
 * License: https://bootstrapmade.com/license/
 */
 
+element {
+  --deep-skyblue: #A2D2FF;
+  --skyblue: #BDE0FE;
+  --deep-pink: #FFAFCC;
+  --pink: #FFC8DD;
+  --purple: #CDB4DB;
+  --font-color: #616161;
+}
+
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/

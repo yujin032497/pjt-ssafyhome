@@ -11,30 +11,28 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/board",
+    path: "/board", // 게시판
     name: "Board",
-    redirect: "/board/list",
+    redirect: "/board",
     component: () => import("@/views/CommonView.vue"),
     children: [
       {
-        path: "list",
-        name: "BoardList",
-        component: () => import("@/components/board/BoardList.vue"),
+        path: "/faq",
+        name: "FAQ",
+        redirect: "/board/faq/list",
+        component: () => import("@/views/CommonView.vue"),
+        children: [
+          //CRUD
+        ],
       },
       {
-        path: "detail/:articleNo",
-        name: "BoardDetail",
-        component: () => import("@/components/board/BoardDetail.vue"),
-      },
-      {
-        path: "write",
-        name: "BoardWrite",
-        component: () => import("@/components/board/BoardWrite.vue"),
-      },
-      {
-        path: "modify/:articleNo",
-        name: "BoardModify",
-        component: () => import("@/components/board/BoardModify.vue"),
+        path: "/qna",
+        name: "QNA",
+        redirect: "/board/qna/list",
+        component: () => import("@/views/CommonView.vue"),
+        children: [
+          //CRUD
+        ],
       },
     ],
   },
@@ -72,15 +70,15 @@ const routes = [
     ],
   },
   {
-    path: "/apt",
-    name: "AptView",
-    redirect: "/apt/list",
+    path: "/house",
+    name: "HouseView",
+    redirect: "/house/list",
     component: () => import("@/views/CommonView.vue"),
     children: [
       {
         path: "list",
-        name: "AptList",
-        component: () => import("@/components/apt/AptList.vue"),
+        name: "HouseList",
+        component: () => import("@/components/house/HouseList.vue"),
       },
     ],
   },

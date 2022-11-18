@@ -55,7 +55,7 @@
 export default {
   methods: {
     routeAptView() {
-      this.$router.push({ name: "AptView" });
+      this.$router.push({ name: "HouseView" });
     },
   },
 };

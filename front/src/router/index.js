@@ -72,6 +72,34 @@ const routes = [
     ],
   },
   {
+    path: "/qna", // 1:1문의하기
+    name: "Qna",
+    redirect: "/qna/list",
+    component: () => import("@/views/CommonView.vue"),
+    children: [
+      {
+        path: "list",
+        name: "QnaList",
+        component: () => import("@/components/qna/QnaList.vue"),
+      },
+      {
+        path: "detail/:articleNo",
+        name: "QnaDetail",
+        component: () => import("@/components/qna/QnaDetail.vue"),
+      },
+      {
+        path: "write",
+        name: "QnaWrite",
+        component: () => import("@/components/qna/QnaWrite.vue"),
+      },
+      {
+        path: "modify/:articleNo",
+        name: "QnaModify",
+        component: () => import("@/components/qna/QnaModify.vue"),
+      },
+    ],
+  },
+  {
     path: "/house",
     name: "HouseView",
     redirect: "/house/list",

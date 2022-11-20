@@ -14,6 +14,8 @@ export default new Vuex.Store({
     accounts: [],
     boards: [],
     board: {},
+    qnas: [],
+    qna: {},
   },
   getters: {
     loginUser(state) {
@@ -30,6 +32,12 @@ export default new Vuex.Store({
     },
     board(state) {
       return state.board;
+    },
+    qnas(state) {
+      return state.qnas;
+    },
+    qna(state) {
+      return state.qna;
     },
   },
   mutations: {
@@ -54,6 +62,12 @@ export default new Vuex.Store({
     },
     BOARD(state, payload) {
       state.board = payload.board;
+    },
+    QNAS(state, payload) {
+      state.qnas = payload.qnas;
+    },
+    QNA(state, payload) {
+      state.qna = payload.qna;
     },
   },
   actions: {
@@ -151,6 +165,22 @@ export default new Vuex.Store({
           case 500:
             alert("내부 서버 오류");
             payload.err();
+            break;
+        }
+      });
+    },
+
+    deleteAccount(context, payload) {
+      http.delete(`/user/delete/${payload.id}`).then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            alert("삭제되었습니다!");
+            payload.cb();
+            break;
+          case 500:
+            alert("내부 서버 오류");
+            payload.cb();
             break;
         }
       });
@@ -263,20 +293,33 @@ export default new Vuex.Store({
       });
     },
 
-    deleteAccount(context, payload) {
-      http.delete(`/user/delete/${payload.id}`).then((response) => {
-        console.log(response);
-        switch (response.status) {
-          case 200:
-            alert("삭제되었습니다!");
-            payload.cb();
-            break;
-          case 500:
-            alert("내부 서버 오류");
-            payload.cb();
-            break;
-        }
-      });
+    getQnas(context, payload) {
+      console.log(payload);
+      http
+        .get(
+          `/qna/list?key=${payload.key ? payload.key : null}&value=${
+            payload.value ? payload.value : ""
+          }&pgno=${payload.pgno}&spp=${payload.spp}`,
+          payload,
+        )
+        .then((response) => {
+          console.log(response.data);
+          switch (response.status) {
+            case 200:
+              console.log(response.data);
+              context.commit({ type: "QNAS", qnas: response.data }); // payload
+              break;
+            case 204:
+              context.commit({ type: "QNAS", qnas: {} }); // payload
+              break;
+            case 400:
+              alert("잘못된 요청입니다.");
+              break;
+            case 500:
+              alert("서버 오류!!!");
+              break;
+          }
+        });
     },
   },
   modules: {},

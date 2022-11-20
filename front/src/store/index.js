@@ -14,6 +14,7 @@ export default new Vuex.Store({
     accounts: [],
     boards: [],
     board: {},
+    locations: [],
   },
   getters: {
     loginUser(state) {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
     },
     board(state) {
       return state.board;
+    },
+    locations(state) {
+      return state.locations;
     },
   },
   mutations: {
@@ -54,6 +58,18 @@ export default new Vuex.Store({
     },
     BOARD(state, payload) {
       state.board = payload.board;
+    },
+    SET_LOCATIONS(state, payload) {
+      console.log(payload.locations);
+      if (payload.locations.length !== 0) {
+        let idx = 0;
+        payload.locations.forEach((location) => {
+          location.idx = idx;
+          idx++;
+        });
+      }
+      console.log(payload.locations);
+      state.locations = payload.locations;
     },
   },
   actions: {
@@ -278,6 +294,54 @@ export default new Vuex.Store({
         }
       });
     },
+
+    getLocations(context, payload) {
+      console.log("신경쓰지말것" + payload);
+      // 장소를 가져오는 API
+      context.commit({ type: "SET_LOCATIONS", locations: [] });
+
+      let response = {
+        status: 200,
+        locations: [
+          {
+            title: "목업1",
+            price: 9999,
+            address: "목업시 목업구 목업동",
+          },
+          {
+            title: "목업2",
+            price: 9999,
+            address: "목업시 목업구 목업동",
+          },
+          {
+            title: "목업3",
+            price: 9999,
+            address: "목업시 목업구 목업동",
+          },
+          {
+            title: "목업4",
+            price: 9999,
+            address: "목업시 목업구 목업동",
+          },
+        ],
+      };
+
+      switch (response.status) {
+        case 200:
+          // payload
+          // console.log(response.data);
+          context.commit({
+            type: "SET_LOCATIONS",
+            locations: response.locations,
+          }); // payload
+          break;
+      }
+    },
+
+    clearLocations(context) {
+      context.commit({ type: "SET_LOCATIONS", locations: [] });
+    },
   },
+
   modules: {},
 });

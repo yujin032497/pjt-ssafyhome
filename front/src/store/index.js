@@ -59,8 +59,10 @@ export default new Vuex.Store({
     BOARD(state, payload) {
       state.board = payload.board;
     },
+    CLEAR_LOCATIONS(state) {
+      state.locations = [];
+    },
     SET_LOCATIONS(state, payload) {
-      console.log(payload);
       if (payload.locations.length !== 0) {
         let idx = 0;
         payload.locations.forEach((location) => {
@@ -69,7 +71,6 @@ export default new Vuex.Store({
         });
       }
       state.locations = payload.locations;
-      console.log(state.locations);
     },
   },
   actions: {
@@ -296,21 +297,19 @@ export default new Vuex.Store({
     },
 
     getLocations(context, payload) {
-      console.log(payload);
       // 장소를 가져오는 API
-      context.commit({ type: "SET_LOCATIONS", locations: [] });
+      context.commit({ type: "CLEAR_LOCATIONS" });
 
       http
         .get(`/map?type=${payload.type}&dongCode=${payload.dongCode}`)
         .then((response) => {
-          console.log(response);
           switch (response.status) {
             case 200:
-              console.log(response.data);
               context.commit({
                 type: "SET_LOCATIONS",
                 locations: response.data,
               }); // payload
+
               break;
           }
         });
@@ -358,7 +357,7 @@ export default new Vuex.Store({
     },
 
     clearLocations(context) {
-      context.commit({ type: "SET_LOCATIONS", locations: [] });
+      context.commit({ type: "CLEAR_LOCATIONS" });
     },
   },
 

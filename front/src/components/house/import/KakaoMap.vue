@@ -45,6 +45,9 @@ export default {
       tag: {
         type: "",
       },
+      markers: [],
+      infoWindows: [],
+      positions: [],
     };
   },
   components: {
@@ -62,34 +65,90 @@ export default {
         level: 3,
       };
 
-      const makerPos = new kakao.maps.LatLng(35.095718, 128.854836);
+      this.map = new kakao.maps.Map(container, options);
+      this.bounds = new kakao.maps.LatLngBounds();
+    },
 
+    search() {
+      this.clear();
+
+      // 마커 지우기
+      this.clearMarkers();
+
+      this.getLocations({
+        type: this.contentType,
+        dongCode: "1111011500",
+      });
+    },
+
+    setKakaoMarkers(locations) {
+      // 1. 카카오 키워드 검색을 위한 객체 생성.
+      const geocoder = new kakao.maps.services.Geocoder();
+
+      // 2. 장소들을 하나씩 addressSearch 시작.
+      // locations.forEach((location) => {
+      //   geocoder.addressSearch(location.fullAddress, (data, status) => {
+      //     if (status == kakao.maps.services.Status.OK) {
+      //       const position = new kakao.maps.LatLng(data[0].y, data[0].x);
+      //       this.displayMarker(position, location.aptName);
+      //       this.bounds.extend(position);
+      //     }
+      //   });
+      // });
+      let bounds = new kakao.maps.LatLngBounds();
+
+      for (let location of locations) {
+        console.log("이게 먼저");
+        geocoder.addressSearch(location.fullAddress, (data, status) => {
+          if (status == kakao.maps.services.Status.OK) {
+            const position = new kakao.maps.LatLng(data[0].y, data[0].x);
+
+            this.displayMarker(position, location.aptName);
+            bounds.extend(position);
+
+            this.map.setBounds(bounds);
+          }
+        });
+      }
+    },
+
+    // 3-2. 마커, 인포인도우 추가.
+    displayMarker(position, name) {
       const marker = new kakao.maps.Marker({
-        position: makerPos,
+        map: this.map,
+        position: position,
       });
 
-      this.map = new kakao.maps.Map(container, options);
-      marker.setMap(this.map);
-
-      const iwContent = `<div style="padding: 5px">SSAFY 부울경 4반</div>`,
-        iwPos = new kakao.maps.LatLng(35.095718, 128.854836);
-
       const infoWindow = new kakao.maps.InfoWindow({
-        position: iwPos,
-        content: iwContent,
+        position: position,
+        content: `<div style="padding: 5px; overflow: hidden;">${name}<br></div>`,
       });
 
       infoWindow.open(this.map, marker);
-    },
-    search() {
-      this.clear();
-      this.getLocations({ type: this.contentType, dongCode: "1111011500" });
 
-      console.log(this.locationList);
-    },
+      kakao.maps.event.addListener(marker, "click", () => {
+        this.mapCenter(position);
+      });
 
+      this.markers.push(marker);
+      this.infoWindows.push(infoWindow);
+      this.positions.push(position);
+    },
     detail(idx) {
-      console.log(idx + "디테일 처리");
+      this.map.setCenter(this.positions[idx]);
+    },
+
+    clearMarkers() {
+      for (let idx = 0; idx < this.markers.length; idx++) {
+        const marker = this.markers[idx];
+        marker.setMap(null);
+
+        const window = this.infoWindows[idx];
+        window.close();
+      }
+      this.markers = [];
+      this.infoWindows = [];
+      this.positions = [];
     },
   },
   name: "KakaoMap.vue",
@@ -97,7 +156,7 @@ export default {
     if (!window.kakao || !window.kakao.maps) {
       const script = document.createElement("script");
       script.src =
-        "//dapi.kakao.com/v2/maps/sdk.js?appkey=94d0d68556035d42bd965204b9c607a1&autoload=false";
+        "//dapi.kakao.com/v2/maps/sdk.js?appkey=94d0d68556035d42bd965204b9c607a1&autoload=false&libraries=services";
       script.type = "text/javascript";
 
       document.head.appendChild(script);
@@ -110,9 +169,15 @@ export default {
       this.initMap();
     }
   },
-
   computed: {
     ...mapGetters({ locationList: "locations" }),
+  },
+  watch: {
+    locationList() {
+      if (this.locationList.length > 0) {
+        this.setKakaoMarkers(this.locationList);
+      }
+    },
   },
 };
 </script>
@@ -156,7 +221,7 @@ export default {
 .map-in {
   width: calc(100% - 514px);
   height: 100%;
-  z-index: -1;
+
   border-top: 1px solid rgba(0, 0, 0, 0.15);
 }
 

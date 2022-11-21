@@ -8,7 +8,9 @@
           v-b-tooltip.hover
           title="클릭하시면 주변정보를 조회할 수 있습니다.">
           <p class="content">{{ item.aptName }}</p>
-          <p class="sub-content">{{ item.dealAmount | filterPrice }}만원</p>
+          <p class="sub-content">
+            평균 {{ item.dealAmount | filterPrice }}만원
+          </p>
           <p class="sub-content">{{ item.fullAddress }}</p>
           <p class="sub-content">{{ item.buildYear }}년 건축</p>
         </div>

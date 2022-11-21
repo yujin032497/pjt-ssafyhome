@@ -24,7 +24,6 @@ public class MapRestController {
     @GetMapping
     public ResponseEntity<?> list(@RequestParam Map<String, String> map) {
         try {
-            logger.debug("각설이 올해도 안죽고 왔다..");
             List<MapItem> mapList = mapService.getMapList(map);
 
             if (mapList != null && mapList.size() > 0) {
@@ -39,4 +38,11 @@ public class MapRestController {
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+//    @GetMapping("/detail")
+//    public ResponseEntity<?> detail(@RequestParam Map<String, String> map) {
+//        try{
+//
+//        }
+//    }
 }

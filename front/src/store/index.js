@@ -17,6 +17,7 @@ export default new Vuex.Store({
     qnas: [],
     qna: {},
     locations: [],
+    total: 0,
   },
   getters: {
     loginUser(state) {
@@ -42,6 +43,9 @@ export default new Vuex.Store({
     },
     locations(state) {
       return state.locations;
+    },
+    total(state) {
+      return state.total;
     },
   },
   mutations: {
@@ -84,6 +88,11 @@ export default new Vuex.Store({
       }
       console.log(payload.locations);
       state.locations = payload.locations;
+    },
+
+    TOTAL(state, payload) {
+      console.log(payload);
+      state.total = payload.total;
     },
   },
   actions: {
@@ -188,7 +197,6 @@ export default new Vuex.Store({
 
     deleteAccount(context, payload) {
       http.delete(`/user/delete/${payload.id}`).then((response) => {
-        console.log(response);
         switch (response.status) {
           case 200:
             alert("삭제되었습니다!");
@@ -202,17 +210,52 @@ export default new Vuex.Store({
       });
     },
 
-    getBoards(context, payload) {
-      console.log(payload);
+    getTotal(context, payload) {
+      console.log("생성" + payload);
       http
         .get(
-          `/board/list?key=${payload.key ? payload.key : null}&value=${
+          `/board/total?key=${payload.key ? payload.key : ""}&value=${
             payload.value ? payload.value : ""
-          }&pgno=${payload.pgno}&spp=${payload.spp}`,
-          payload,
+          }&pgno=${payload.pgno ? payload.pgno : ""}&spp=${
+            payload.spp ? payload.spp : ""
+          }`,
         )
         .then((response) => {
-          console.log(response.data);
+          switch (response.status) {
+            case 200:
+              console.log(response.data);
+              context.commit({ type: "TOTAL", total: response.data }); // payload
+              break;
+            case 204:
+              context.commit({ type: "TOTAL", total: 0 }); // payload
+              break;
+            case 400:
+              alert("잘못된 요청입니다.");
+              break;
+            case 500:
+              alert("서버 오류!!!");
+              break;
+          }
+        });
+    },
+
+    getBoards(context, payload) {
+      console.log(
+        `/board/list?key=${payload.key ? payload.key : ""}&value=${
+          payload.value ? payload.value : ""
+        }&pgno=${payload.pgno ? payload.pgno : ""}&spp=${
+          payload.spp ? payload.spp : ""
+        }`,
+      );
+      http
+        .get(
+          `/board/list?key=${payload.key ? payload.key : ""}&value=${
+            payload.value ? payload.value : ""
+          }&pgno=${payload.pgno ? payload.pgno : ""}&spp=${
+            payload.spp ? payload.spp : ""
+          }`,
+        )
+        .then((response) => {
           switch (response.status) {
             case 200:
               console.log(response.data);
@@ -232,7 +275,6 @@ export default new Vuex.Store({
     },
 
     getBoard(context, payload) {
-      console.log(payload);
       http.get(`/board/view/${payload.articleNo}`).then((response) => {
         console.log(response.data);
         switch (response.status) {
@@ -251,7 +293,6 @@ export default new Vuex.Store({
     },
 
     createBoard(context, payload) {
-      console.log(payload.board);
       http.post("/board/write", payload.board).then((response) => {
         switch (response.status) {
           case 200:

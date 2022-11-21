@@ -22,16 +22,14 @@
         <div class="test"></div>
       </div>
     </b-navbar>
-    <kakao-map class="map" :contentType="contentType"></kakao-map>
   </div>
 </template>
 
 <script>
 import NavItem from "@/components/house/import/navItem";
-import KakaoMap from "@/components/house/import/KakaoMap";
 import { mapActions } from "vuex";
 export default {
-  components: { KakaoMap, NavItem },
+  components: { NavItem },
   data() {
     return {
       content: ["아파트", "연립/다세대"],

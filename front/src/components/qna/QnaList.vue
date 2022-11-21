@@ -33,27 +33,34 @@
                 <b-th width="15%">진행상태</b-th>
               </b-tr>
             </b-thead>
-            <tbody></tbody>
+            <tbody>
+              <list-row
+                v-for="(qnas, index) in qnas"
+                :key="index"
+                :articleNo="qnas.articleNo"
+                :subject="qnas.subject"
+                :registerTime="qnas.registerTime"
+                :state="qnas.state"></list-row>
+            </tbody>
           </b-table-simple>
         </b-col>
-        <b-col v-else class="text-center">등록된 게시글이 없습니다.</b-col>
+        <b-col v-else class="text-center">등록된 문의글이 없습니다.</b-col>
       </b-row>
     </b-container>
     <div class="overflow-auto">
-      <b-pagination-nav
+      <b-pagination
+        @page-click="pageChange"
         v-model="pgno"
-        :link-gen="linkGen"
-        :number-of-pages="10"
-        use-router
-        first-number
-        last-number
-        align="center"></b-pagination-nav>
+        :total-rows="total"
+        :per-page="10"
+        aria-controls="my-table"
+        align="center"></b-pagination>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
@@ -64,25 +71,28 @@ export default {
       spp: 10,
       options: [
         { value: null, text: "분류 선택" },
-        { value: "author", text: "작성자" },
         { value: "subject", text: "제목" },
+        { value: "state", text: "진행상태" },
       ],
     };
   },
   methods: {
+    ...mapActions(["getQnas", "getTotal"]),
     movePage: function () {
       this.$router.push({ name: "QnaWrite" });
     },
-    search() {},
-    linkGen(pageNum) {
-      const payload = {
-        key: this.selected,
-        value: this.searchVal,
-        pgno: this.pgno,
-        spp: this.spp,
-      };
-      this.getBoards(payload);
-      return pageNum === 1 ? "?" : `?page=${pageNum}`;
+    search() {
+      if (this.selected !== null && this.searchVal !== "") {
+        const payload = {
+          key: this.selected,
+          value: this.searchVal,
+          pgno: this.pgno,
+          spp: this.spp,
+        };
+        this.getQnas(payload);
+      } else {
+        this.getQnas({});
+      }
     },
   },
   computed: {

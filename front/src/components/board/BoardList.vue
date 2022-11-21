@@ -51,14 +51,13 @@
       </b-row>
     </b-container>
     <div class="overflow-auto">
-      <b-pagination-nav
+      <b-pagination
+        @page-click="pageChange"
         v-model="pgno"
-        :link-gen="linkGen"
-        :number-of-pages="10"
-        use-router
-        first-number
-        last-number
-        align="center"></b-pagination-nav>
+        :total-rows="total"
+        :per-page="10"
+        aria-controls="my-table"
+        align="center"></b-pagination>
     </div>
   </div>
 </template>
@@ -84,7 +83,7 @@ export default {
     "list-row": () => import("@/components/board/include/ListRow.vue"),
   },
   methods: {
-    ...mapActions(["getBoards"]),
+    ...mapActions(["getBoards", "getTotal"]),
     movePage: function () {
       this.$router.push({ name: "BoardWrite" });
     },
@@ -93,7 +92,7 @@ export default {
         const payload = {
           key: this.selected,
           value: this.searchVal,
-          pg: this.pg,
+          pgno: this.pgno,
           spp: this.spp,
         };
         this.getBoards(payload);
@@ -101,28 +100,35 @@ export default {
         this.getBoards({});
       }
     },
-    linkGen(pageNum) {
+
+    pageChange(bvEvent, page) {
       const payload = {
-        key: this.selected,
-        value: this.searchVal,
-        pgno: this.pgno,
+        pgno: page,
         spp: this.spp,
       };
       this.getBoards(payload);
-      return pageNum === 1 ? "?" : `?page=${pageNum}`;
     },
   },
 
   created() {
-    this.getBoards({});
+    console.log("뷰단");
+    this.getTotal({});
+    const payload = {
+      pgno: this.pgno,
+      spp: this.spp,
+    };
+    this.getBoards(payload);
+    console.log(this.total);
   },
 
   computed: {
-    ...mapGetters(["boards"]),
+    ...mapGetters(["boards", "total"]),
     input() {
       return {
         searchVal: "",
         selected: null,
+        pgno: 1,
+        spp: 10,
       };
     },
   },

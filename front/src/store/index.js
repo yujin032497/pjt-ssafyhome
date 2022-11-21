@@ -60,7 +60,7 @@ export default new Vuex.Store({
       state.board = payload.board;
     },
     SET_LOCATIONS(state, payload) {
-      console.log(payload.locations);
+      console.log(payload);
       if (payload.locations.length !== 0) {
         let idx = 0;
         payload.locations.forEach((location) => {
@@ -68,8 +68,8 @@ export default new Vuex.Store({
           idx++;
         });
       }
-      console.log(payload.locations);
       state.locations = payload.locations;
+      console.log(state.locations);
     },
   },
   actions: {
@@ -296,46 +296,65 @@ export default new Vuex.Store({
     },
 
     getLocations(context, payload) {
-      console.log("신경쓰지말것" + payload);
+      console.log(payload);
       // 장소를 가져오는 API
       context.commit({ type: "SET_LOCATIONS", locations: [] });
 
-      let response = {
-        status: 200,
-        locations: [
-          {
-            title: "목업1",
-            price: 9999,
-            address: "목업시 목업구 목업동",
-          },
-          {
-            title: "목업2",
-            price: 9999,
-            address: "목업시 목업구 목업동",
-          },
-          {
-            title: "목업3",
-            price: 9999,
-            address: "목업시 목업구 목업동",
-          },
-          {
-            title: "목업4",
-            price: 9999,
-            address: "목업시 목업구 목업동",
-          },
-        ],
-      };
+      http
+        .get(`/map?type=${payload.type}&dongCode=${payload.dongCode}`)
+        .then((response) => {
+          console.log(response);
+          switch (response.status) {
+            case 200:
+              console.log(response.data);
+              context.commit({
+                type: "SET_LOCATIONS",
+                locations: response.data,
+              }); // payload
+              break;
+          }
+        });
 
-      switch (response.status) {
-        case 200:
-          // payload
-          // console.log(response.data);
-          context.commit({
-            type: "SET_LOCATIONS",
-            locations: response.locations,
-          }); // payload
-          break;
-      }
+      // let resp = {
+      //   status: 200,
+      //   locations: [
+      //     {
+      //       title: "목업1(광화문스페이스1차)",
+      //       price: 9999,
+      //       address: "서울특별시 종로구 사직동 9",
+      //       dealym: "202209",
+      //     },
+      //     {
+      //       title: "목업2",
+      //       price: 9999,
+      //       address: "목업시 목업구 목업동",
+      //       dealym: "202209",
+      //     },
+      //     {
+      //       title: "목업3",
+      //       price: 9999,
+      //       address: "목업시 목업구 목업동",
+      //       dealym: "202209",
+      //     },
+      //     {
+      //       title: "목업4",
+      //       price: 9999,
+      //       address: "목업시 목업구 목업동",
+      //       dealym: "202209",
+      //     },
+      //   ],
+      // };
+      //
+      // switch (resp.status) {
+      //   case 200:
+      //     // payload
+      //     // console.log(response.data);
+      //     context.commit({
+      //       type: "SET_LOCATIONS",
+      //       locations: resp.data,
+      //     }); // payload
+      //     break;
+      // }
     },
 
     clearLocations(context) {

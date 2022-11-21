@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.pjt.model.mapper.MapDao">
+
+    <resultMap type="mapItem" id="house">
+        <result column="시도" property="sidoName"/>
+        <result column="구군" property="gugunName"/>
+        <result column="동" property="dongName"/>
+        <result column="지번" property="jibun"/>
+        <result column="아파트코드" property="aptCode"/>
+        <result column="아파트명" property="aptName"/>
+        <result column="건축년도" property="buildYear"/>
+        <result column="계약년도" property="dealYear"/>
+        <result column="계약월" property="dealMonth"/>
+        <result column="계약일" property="dealDay"/>
+        <result column="면적" property="area"/>
+        <result column="층" property="floor"/>
+        <result column="구분" property="type"/>
+        <result column="계약금액" property="dealAmount"/>
+    </resultMap>
+    <resultMap type="mapItem" id="apt" extends="house">
+        <result column="위도" property="lat"/>
+        <result column="경도" property="lng"/>
+    </resultMap>
+
+    <select id="listHouseMap" parameterType="map" resultMap="house">
+        SELECT sq.sidoName                     '시도'
+             , sq.gugunName                    '구군'
+             , sq.dongName                     '동'
+             , sq.jibun                        '지번'
+             , sq.aptCode                      '아파트코드'
+             , sq.aptName                      '아파트명'
+             , sq.buildYear                    '건축년도'
+             , sq.lat                          '위도'
+             , sq.lng                          '경도'
+             , hd.dealYear                     '계약년도'
+             , hd.dealMonth                    '계약월'
+             , hd.dealDay                      '계약일'
+             , hd.area                         '면적'
+             , hd.floor                        '층'
+             , hd.type                         '구분'
+             , REPLACE(hd.dealAmount, ',', '') '계약금액'
+        FROM (SELECT ba.sidoName
+                   , ba.gugunName
+                   , ba.dongName
+                   , hi.jibun
+                   , hi.aptCode
+                   , hi.aptName
+                   , hi.buildYear
+                   , hi.lat
+                   , hi.lng
+              FROM baseaddress ba,
+                   houseinfo hi
+              WHERE ba.dongCode = hi.dongCode
+                AND ba.dongCode LIKE #{dongCode} -- 여기에 동코드 집어넣으면 만사 오케이
+             ) sq,
+             housedeal hd
+        WHERE sq.aptCode = hd.aptCode
+          AND hd.type = #{type}
+        ORDER BY sq.aptCode ASC
+               , hd.dealYear DESC
+               , hd.dealMonth DESC
+               , hd.dealDay DESC
+               , hd.area DESC
+               , hd.dealAmount DESC
+    </select>
+    <select id="listAptMap" parameterType="map" resultMap="apt">
+        SELECT sq.sidoName                           '시도'
+             , sq.gugunName                          '구군'
+             , sq.dongName                           '동'
+             , sq.jibun                              '지번'
+             , sq.aptCode                            '아파트코드'
+             , sq.aptName                            '아파트명'
+             , sq.buildYear                          '건축년도'
+             , sq.lat                                '위도'
+             , sq.lng                                '경도'
+             , hd.dealYear                           '계약년도'
+             , hd.dealMonth                          '계약월'
+             , hd.dealDay                            '계약일'
+             , hd.area                               '면적'
+             , hd.floor                              '층'
+             , hd.type                               '구분'
+             , TRIM(REPLACE(hd.dealAmount, ',', '')) '계약금액'
+        FROM (SELECT ba.sidoName
+                   , ba.gugunName
+                   , ba.dongName
+                   , hi.jibun
+                   , hi.aptCode
+                   , hi.aptName
+                   , hi.buildYear
+                   , hi.lat
+                   , hi.lng
+              FROM baseaddress ba,
+                   houseinfo hi
+              WHERE ba.dongCode = hi.dongCode
+                AND ba.dongCode LIKE #{dongCode} -- 여기에 동코드 집어넣으면 만사 오케이
+             ) sq,
+             housedeal hd
+        WHERE sq.aptCode = hd.aptCode
+          AND hd.type = #{type}
+        ORDER BY sq.aptCode ASC
+               , hd.dealYear DESC
+               , hd.dealMonth DESC
+               , hd.dealDay DESC
+               , hd.area DESC
+               , hd.dealAmount DESC
+    </select>
+</mapper>

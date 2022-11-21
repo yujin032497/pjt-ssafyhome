@@ -9,8 +9,8 @@
         <div
           class="search-bar p-auto d-flex align-content-center justify-content-center">
           <b-button @click="search"
-            >검색 테스트 버튼 {{ contentType }}</b-button
-          >
+            >검색 테스트 버튼 {{ contentType }}
+          </b-button>
         </div>
         <div class="tag-bar py-1 d-flex">
           <div class="tag text-center">검색태그</div>
@@ -18,7 +18,7 @@
         </div>
       </div>
       <div>
-        <div class="search-items py-2 px-3">
+        <div class="search-items py-2 px-3" style="overflow: auto">
           <item-content
             v-for="(data, index) in locationList"
             :key="index"
@@ -83,7 +83,9 @@ export default {
     },
     search() {
       this.clear();
-      this.getLocations({});
+      this.getLocations({ type: this.contentType, dongCode: "1111011500" });
+
+      console.log(this.locationList);
     },
 
     detail(idx) {
@@ -163,5 +165,9 @@ export default {
   /*width: 30%;*/
   height: 100%;
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.search-items {
+  max-height: 79.9vh;
 }
 </style>

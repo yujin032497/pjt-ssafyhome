@@ -22,6 +22,7 @@
 	<select id="getTotalArticle" resultType="int">
 		SELECT COUNT(*)
 		FROM board
+		<include refid="search"></include>
 	</select>
 	
 	<sql id="search">

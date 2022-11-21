@@ -7,24 +7,23 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ssafy.pjt.model.dto.Board;
-import com.ssafy.pjt.model.mapper.BoardDao;
-import com.ssafy.pjt.util.SizeConstant;
+import com.ssafy.pjt.model.dto.Qna;
+import com.ssafy.pjt.model.mapper.QnaDao;
 
 @Service
-public class BoardServiceImpl implements BoardService{
+public class QnaServiceImpl implements QnaService{
 	
 	@Autowired
-	private BoardDao boardDao;
+	private QnaDao QnaDao;
 	
 	@Override
-	public int writeArticle(Board boardDto) throws Exception {
-		System.out.println("writeArticle");
-		return boardDao.writeArticle(boardDto);
+	public int writeQna(Qna QnaDto) throws Exception {
+		System.out.println("writeQna");
+		return QnaDao.writeQna(QnaDto);
 	}
 
 	@Override
-	public List<Board> getListArticle(Map<String, String> map) throws Exception {
+	public List<Qna> getListQna(Map<String, String> map) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
 		String key = map.get("key");
 		if ("userid".equals(key))
@@ -42,11 +41,11 @@ public class BoardServiceImpl implements BoardService{
 		//param.put("listsize", SizeConstant.LIST_SIZE);
 
 		System.out.println(param.toString());
-		return boardDao.getListArticle(param);
+		return QnaDao.getListQna(param);
 	}
 
 	@Override
-	public int getTotalArticle(Map<String, String> map) throws Exception {
+	public int getTotalQna(Map<String, String> map) throws Exception {
 		Map<String, Object> param = new HashMap<String, Object>();
 		String key = map.get("key");
 		if ("userid".equals(key))
@@ -56,33 +55,33 @@ public class BoardServiceImpl implements BoardService{
 		param.put("word", map.get("value") == null ? "" : map.get("value"));
 		
 		System.out.println(param.toString());
-		return boardDao.getTotalArticle(param);
+		return QnaDao.getTotalQna(param);
 	}
 
 	@Override
-	public Board getArticle(int articleNo) throws Exception {
-		return boardDao.getArticle(articleNo);
+	public Qna getQna(int QnaNo) throws Exception {
+		return QnaDao.getQna(QnaNo);
 	}
 
 	@Override
-	public void updateHit(int articleNo) throws Exception {
-		boardDao.updateHit(articleNo);
+	public void updateHit(int QnaNo) throws Exception {
+		QnaDao.updateHit(QnaNo);
 		
 	}
 
 	@Override
-	public int updateArticle(Board boardDto) throws Exception {
-		return boardDao.updateArticle(boardDto);
+	public int updateQna(Qna QnaDto) throws Exception {
+		return QnaDao.updateQna(QnaDto);
 	}
 
 	@Override
-	public int deleteArticle(int articleNo) throws Exception {
-		return boardDao.deleteArticle(articleNo);
+	public int deleteQna(int QnaNo) throws Exception {
+		return QnaDao.deleteQna(QnaNo);
 	}
 
 	@Override
 	public void deleteAll() throws Exception {
-		boardDao.deleteAll();
+		QnaDao.deleteAll();
 		
 	}
 

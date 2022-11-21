@@ -30,4 +30,12 @@ export default {
   background-color: #ababab;
   height: 30vh;
 }
+
+h3 {
+  margin: 15px;
+}
+
+p {
+  margin: 5px !important;
+}
 </style>

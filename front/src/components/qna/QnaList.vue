@@ -3,7 +3,7 @@
     <b-container class="my-auto">
       <b-row>
         <b-col class="text-center">
-          <h3 class="underline title">FAQ</h3>
+          <h3 class="underline title">1:1 문의하기</h3>
         </b-col>
       </b-row>
       <b-row class="mb-1">
@@ -24,27 +24,16 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col v-if="boards.length">
+        <b-col v-if="qnas.length">
           <b-table-simple hover responsive>
             <b-thead class="table-info">
               <b-tr class="text-center">
-                <b-th width="10%">번호</b-th>
                 <b-th>제목</b-th>
-                <b-th width="10%">작성자</b-th>
-                <b-th width="10%">조회수</b-th>
                 <b-th width="10%">작성일</b-th>
+                <b-th width="15%">진행상태</b-th>
               </b-tr>
             </b-thead>
-            <tbody>
-              <list-row
-                v-for="(board, index) in boards"
-                :key="index"
-                :articleNo="board.articleNo"
-                :subject="board.subject"
-                :userName="board.userName"
-                :hit="board.hit"
-                :registerTime="board.registerTime"></list-row>
-            </tbody>
+            <tbody></tbody>
           </b-table-simple>
         </b-col>
         <b-col v-else class="text-center">등록된 게시글이 없습니다.</b-col>
@@ -64,7 +53,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -80,27 +69,11 @@ export default {
       ],
     };
   },
-  components: {
-    "list-row": () => import("@/components/board/include/ListRow.vue"),
-  },
   methods: {
-    ...mapActions(["getBoards"]),
     movePage: function () {
-      this.$router.push({ name: "BoardWrite" });
+      this.$router.push({ name: "QnaWrite" });
     },
-    search() {
-      if (this.selected !== null && this.searchVal !== "") {
-        const payload = {
-          key: this.selected,
-          value: this.searchVal,
-          pg: this.pg,
-          spp: this.spp,
-        };
-        this.getBoards(payload);
-      } else {
-        this.getBoards({});
-      }
-    },
+    search() {},
     linkGen(pageNum) {
       const payload = {
         key: this.selected,
@@ -112,13 +85,8 @@ export default {
       return pageNum === 1 ? "?" : `?page=${pageNum}`;
     },
   },
-
-  created() {
-    this.getBoards({});
-  },
-
   computed: {
-    ...mapGetters(["boards"]),
+    ...mapGetters(["qnas"]),
     input() {
       return {
         searchVal: "",
@@ -127,37 +95,10 @@ export default {
     },
   },
 };
-
-// <b-form-group class="wrapper-search">
-//             <b-form-select class="search-select" options=""> </b-form-select>
-//             <b-form-input
-//               class="search-input"
-//               placeholder="검색어를 입력하세요." />
-//             <b-button class="search-btn">검색</b-button>
 </script>
 
-<style scoped>
+<style>
 .list-container {
-  min-height: 64.2vh;
-}
-
-.wrapper-search {
-  width: 50%;
-}
-
-.custom-select {
-  width: 25%;
-}
-
-.search-input {
-  width: 40%;
-}
-
-.search-btn {
-  width: 20%;
-}
-
-.table-info {
-  background-color: var(--deep-skyblue);
+  min-height: 64.2wh;
 }
 </style>

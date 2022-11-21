@@ -1,28 +1,50 @@
 <template>
   <div class="main-div">
     <b-navbar>
-      <b-navbar-nav>
-        <nav-item :content="content[0]" :subContent="subContent" :url="''" />
-        <nav-item :content="content[1]" :subContent="subContent" :url="''" />
-      </b-navbar-nav>
+      <div
+        class="ml-auto pl-3 justify-content-between d-flex"
+        style="width: 514px">
+        <b-navbar-nav>
+          <nav-item
+            :class="{ selected: contentType === 'apt' }"
+            :content="content[0]"
+            :subContent="subContent"
+            :typeName="'apt'"
+            @changeType="changeType" />
+          <nav-item
+            :class="{ selected: contentType === 'house' }"
+            :content="content[1]"
+            :subContent="subContent"
+            :typeName="'house'"
+            @changeType="changeType" />
+        </b-navbar-nav>
+
+        <div class="test"></div>
+      </div>
     </b-navbar>
-    <div class="d-flex">
-      <div id="map"></div>
-      <div id="map-nav"></div>
-    </div>
-    <section></section>
+    <kakao-map class="map" :contentType="contentType"></kakao-map>
   </div>
 </template>
 
 <script>
 import NavItem from "@/components/house/import/navItem";
+import KakaoMap from "@/components/house/import/KakaoMap";
+import { mapActions } from "vuex";
 export default {
-  components: { NavItem },
+  components: { KakaoMap, NavItem },
   data() {
     return {
       content: ["아파트", "연립/다세대"],
       subContent: "매매/전월세",
+      contentType: "apt",
     };
+  },
+  methods: {
+    ...mapActions({ clear: "clearLocations" }),
+    changeType(type) {
+      this.contentType = type;
+      this.clear();
+    },
   },
 };
 </script>
@@ -32,15 +54,19 @@ export default {
   min-height: 66vh;
 }
 
-#map {
-  width: 70%;
-  height: 66vh;
-  background-color: #2eca6a;
+.map {
+  height: 89vh;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
-#map-nav {
-  width: 30%;
-  height: 66vh;
-  background-color: var(--deep-skyblue);
+.test {
+  width: 20%;
+  height: 100%;
+  background-color: #ff0000;
+}
+
+.selected {
+  color: var(--deep-skyblue);
 }
 </style>

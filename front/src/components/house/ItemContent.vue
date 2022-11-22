@@ -7,10 +7,12 @@
           @click="onEmit"
           v-b-tooltip.hover
           title="클릭하시면 주변정보를 조회할 수 있습니다.">
-          <p class="content">{{ item.title }}</p>
-          <p class="sub-content">{{ item.price }}</p>
-          <p class="sub-content">{{ item.address }}</p>
-          <p class="sub-content">컨텐츠1</p>
+          <p class="content">{{ item.aptName }}</p>
+          <p class="sub-content">
+            평균 {{ item.dealAmount | filterPrice }}만원
+          </p>
+          <p class="sub-content">{{ item.fullAddress }}</p>
+          <p class="sub-content">{{ item.buildYear }}년 건축</p>
         </div>
         <div class="fav text-center">
           <div
@@ -31,15 +33,22 @@ export default {
   props: {
     item: {
       idx: { type: Number },
-      title: { type: String },
-      price: { type: Number },
-      address: { type: String },
+      aptName: { type: String },
+      dealAmount: { type: Number },
+      fullAddress: { type: String },
+      buildYear: { type: String },
     },
   },
   methods: {
     onEmit() {
       console.log(this.item.idx);
       this.$emit("detailIdx", this.item.idx);
+    },
+  },
+  filters: {
+    filterPrice: (value) => {
+      if (!value) return value;
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
 };

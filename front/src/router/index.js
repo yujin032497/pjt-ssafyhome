@@ -11,28 +11,30 @@ const routes = [
     component: HomeView,
   },
   {
-    path: "/board", // 게시판
+    path: "/board", // FAQ
     name: "Board",
-    redirect: "/board",
+    redirect: "/board/list",
     component: () => import("@/views/CommonView.vue"),
     children: [
       {
-        path: "/faq",
-        name: "FAQ",
-        redirect: "/board/faq/list",
-        component: () => import("@/views/CommonView.vue"),
-        children: [
-          //CRUD
-        ],
+        path: "list",
+        name: "BoardList",
+        component: () => import("@/components/board/BoardList.vue"),
       },
       {
-        path: "/qna",
-        name: "QNA",
-        redirect: "/board/qna/list",
-        component: () => import("@/views/CommonView.vue"),
-        children: [
-          //CRUD
-        ],
+        path: "detail/:articleNo",
+        name: "BoardDetail",
+        component: () => import("@/components/board/BoardDetail.vue"),
+      },
+      {
+        path: "write",
+        name: "BoardWrite",
+        component: () => import("@/components/board/BoardWrite.vue"),
+      },
+      {
+        path: "modify/:articleNo",
+        name: "BoardModify",
+        component: () => import("@/components/board/BoardModify.vue"),
       },
     ],
   },
@@ -66,6 +68,34 @@ const routes = [
         path: "regist",
         name: "UserRegist",
         component: () => import("@/components/user/UserRegist.vue"),
+      },
+    ],
+  },
+  {
+    path: "/qna", // 1:1문의하기
+    name: "Qna",
+    redirect: "/qna/list",
+    component: () => import("@/views/CommonView.vue"),
+    children: [
+      {
+        path: "list",
+        name: "QnaList",
+        component: () => import("@/components/qna/QnaList.vue"),
+      },
+      {
+        path: "detail/:articleNo",
+        name: "QnaDetail",
+        component: () => import("@/components/qna/QnaDetail.vue"),
+      },
+      {
+        path: "write",
+        name: "QnaWrite",
+        component: () => import("@/components/qna/QnaWrite.vue"),
+      },
+      {
+        path: "modify/:articleNo",
+        name: "QnaModify",
+        component: () => import("@/components/qna/QnaModify.vue"),
       },
     ],
   },

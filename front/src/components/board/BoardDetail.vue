@@ -1,9 +1,16 @@
 <template>
   <div class="list-container">
     <b-container class="bv-example-row mt-3">
-      <b-row>
+      <b-row class="mb-1">
         <b-col>
-          <b-alert show><h3>글보기</h3></b-alert>
+          <b-card
+            class="mb-2"
+            border-variant="dark"
+            :header-html="`<h3>${article.articleNo}. ${article.subject}</h3><div><h6>${article.userName}</div></div><div>${article.hit}</h6></div><div>${article.registerTime}</h6>`">
+            <b-card-body class="text-left">
+              <div v-html="message"></div>
+            </b-card-body>
+          </b-card>
         </b-col>
       </b-row>
       <b-row class="mb-1">
@@ -12,27 +19,20 @@
         </b-col>
         <b-col class="text-right">
           <b-button
+            v-if="loginUser.isAdmin === 1"
             variant="outline-info"
             size="sm"
             @click="moveModifyArticle"
             class="mr-2"
             >글수정</b-button
           >
-          <b-button variant="outline-danger" size="sm" @click="deleteArticle"
+          <b-button
+            v-if="loginUser.isAdmin === 1"
+            variant="outline-danger"
+            size="sm"
+            @click="deleteArticle"
             >글삭제</b-button
           >
-        </b-col>
-      </b-row>
-      <b-row class="mb-1">
-        <b-col>
-          <b-card
-            class="mb-2"
-            border-variant="dark"
-            :header-html="`<h3>${article.articleNo}.${article.subject} [${article.hit}]</h3><div><h6>${article.userName}</div><div>${article.registerTime}</h6></div>`">
-            <b-card-body class="text-left">
-              <div v-html="message"></div>
-            </b-card-body>
-          </b-card>
         </b-col>
       </b-row>
     </b-container>
@@ -52,7 +52,7 @@ export default {
         return this.article.content.split("\n").join("<br>");
       return "";
     },
-
+    ...mapGetters({ loginUser: "loginUser" }),
     ...mapGetters({ article: "board" }),
   },
   created() {

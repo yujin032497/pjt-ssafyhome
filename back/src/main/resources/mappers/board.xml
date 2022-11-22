@@ -41,7 +41,7 @@
 		where b.user_id = m.id
 		<include refid="search"></include>
 		order by b.article_no desc
-		limit #{start}, #{listsize}
+		limit #{pgno}, #{spp}
 	</select>
 	
 	<insert id="writeArticle" parameterType="board">

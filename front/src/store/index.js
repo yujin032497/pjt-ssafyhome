@@ -346,10 +346,13 @@ export default new Vuex.Store({
       context.commit({ type: "CLEAR_LOCATIONS" });
 
       http
-        .get(`/map?type=${payload.type}&dongCode=${payload.dongCode}`)
+        .get(
+          `/map?gubn=${payload.gubn}&type=${payload.type}&dongCode=${payload.dongCode}`,
+        )
         .then((response) => {
           switch (response.status) {
             case 200:
+              console.log(response.data);
               context.commit({
                 type: "SET_LOCATIONS",
                 locations: response.data,

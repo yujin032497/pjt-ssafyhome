@@ -23,6 +23,9 @@
             v-for="(data, index) in locationList"
             :key="index"
             :item="data"
+            :type="searchType"
+            :contentType="contentType"
+            ref="itemContent"
             @detailIdx="detail" />
 
           <div v-if="locationList.length === 0" class="text-center">
@@ -48,6 +51,7 @@ export default {
       markers: [],
       infoWindows: [],
       positions: [],
+      searchType: 1,
     };
   },
   components: {
@@ -64,12 +68,9 @@ export default {
         center: new kakao.maps.LatLng(35.095718, 128.854836),
         level: 3,
       };
-      const mapTypeControl = new kakao.maps.MapTypeControl();
-      const zoomControl = new kakao.maps.ZoomControl();
 
       this.map = new kakao.maps.Map(container, options);
-      this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
-      this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+      this.bounds = new kakao.maps.LatLngBounds();
     },
 
     search() {
@@ -79,7 +80,8 @@ export default {
       this.clearMarkers();
 
       this.getLocations({
-        type: this.contentType,
+        gubn: this.contentType,
+        type: this.searchType,
         dongCode: "1111011500",
       });
     },
@@ -88,9 +90,9 @@ export default {
       // 1. 카카오 키워드 검색을 위한 객체 생성.
       const geocoder = new kakao.maps.services.Geocoder();
 
+      // 2. 장소들을 하나씩 addressSearch 시작.
       let bounds = new kakao.maps.LatLngBounds();
 
-      // 2. 장소들을 하나씩 addressSearch 시작.
       for (let location of locations) {
         console.log("이게 먼저");
         geocoder.addressSearch(location.fullAddress, (data, status) => {

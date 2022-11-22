@@ -29,5 +29,5 @@ public class MapItem {
     private double area;
     private int floor;
     private int type;
-    private int dealAmount;
+    private String dealAmount;
 }

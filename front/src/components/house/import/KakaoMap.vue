@@ -64,9 +64,12 @@ export default {
         center: new kakao.maps.LatLng(35.095718, 128.854836),
         level: 3,
       };
+      const mapTypeControl = new kakao.maps.MapTypeControl();
+      const zoomControl = new kakao.maps.ZoomControl();
 
       this.map = new kakao.maps.Map(container, options);
-      this.bounds = new kakao.maps.LatLngBounds();
+      this.map.addControl(mapTypeControl, kakao.maps.ControlPosition.TOPRIGHT);
+      this.map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
     },
 
     search() {
@@ -85,18 +88,9 @@ export default {
       // 1. 카카오 키워드 검색을 위한 객체 생성.
       const geocoder = new kakao.maps.services.Geocoder();
 
-      // 2. 장소들을 하나씩 addressSearch 시작.
-      // locations.forEach((location) => {
-      //   geocoder.addressSearch(location.fullAddress, (data, status) => {
-      //     if (status == kakao.maps.services.Status.OK) {
-      //       const position = new kakao.maps.LatLng(data[0].y, data[0].x);
-      //       this.displayMarker(position, location.aptName);
-      //       this.bounds.extend(position);
-      //     }
-      //   });
-      // });
       let bounds = new kakao.maps.LatLngBounds();
 
+      // 2. 장소들을 하나씩 addressSearch 시작.
       for (let location of locations) {
         console.log("이게 먼저");
         geocoder.addressSearch(location.fullAddress, (data, status) => {

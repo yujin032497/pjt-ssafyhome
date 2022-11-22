@@ -23,6 +23,9 @@
             v-for="(data, index) in locationList"
             :key="index"
             :item="data"
+            :type="searchType"
+            :contentType="contentType"
+            ref="itemContent"
             @detailIdx="detail" />
 
           <div v-if="locationList.length === 0" class="text-center">
@@ -48,6 +51,7 @@ export default {
       markers: [],
       infoWindows: [],
       positions: [],
+      searchType: 1,
     };
   },
   components: {
@@ -76,7 +80,8 @@ export default {
       this.clearMarkers();
 
       this.getLocations({
-        type: this.contentType,
+        gubn: this.contentType,
+        type: this.searchType,
         dongCode: "1111011500",
       });
     },
@@ -86,15 +91,6 @@ export default {
       const geocoder = new kakao.maps.services.Geocoder();
 
       // 2. 장소들을 하나씩 addressSearch 시작.
-      // locations.forEach((location) => {
-      //   geocoder.addressSearch(location.fullAddress, (data, status) => {
-      //     if (status == kakao.maps.services.Status.OK) {
-      //       const position = new kakao.maps.LatLng(data[0].y, data[0].x);
-      //       this.displayMarker(position, location.aptName);
-      //       this.bounds.extend(position);
-      //     }
-      //   });
-      // });
       let bounds = new kakao.maps.LatLngBounds();
 
       for (let location of locations) {

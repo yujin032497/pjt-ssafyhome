@@ -29,12 +29,17 @@ public class BoardServiceImpl implements BoardService{
 		String key = map.get("key");
 		if ("userid".equals(key))
 			key = "b.user_id";
+		int spp = Integer.parseInt(map.get("spp"));
+		int pgno = (Integer.parseInt(map.get("pgno"))-1)*spp;
 		param.put("key", key == null ? "" : key);
 		param.put("word", map.get("value") == null ? "" : map.get("value"));
-		int pgNo = Integer.parseInt(map.get("pgno") == null ? "1" : map.get("pgno"));
-		int start = pgNo * SizeConstant.LIST_SIZE - SizeConstant.LIST_SIZE;
-		param.put("start", start);
-		param.put("listsize", SizeConstant.LIST_SIZE);
+		param.put("pgno", pgno);
+		param.put("spp", spp);
+		
+		//int pgNo = Integer.parseInt(map.get("pgno") == null ? "1" : map.get("pgno"));
+		//int start = pgNo * SizeConstant.LIST_SIZE - SizeConstant.LIST_SIZE;
+		//param.put("start", start);
+		//param.put("listsize", SizeConstant.LIST_SIZE);
 
 		System.out.println(param.toString());
 		return boardDao.getListArticle(param);

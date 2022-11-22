@@ -2,14 +2,14 @@
   <div class="home">
     <section>
       <div class="v-100 video-box">
-        <video muted autoplay loop class="w-100">
-          <source src="@/assets/img/mainHouse.mp4" type="video/mp4" />
-          <strong>Your browser does not support the video tag.</strong>
-        </video>
-        <div class="video-text">
-          <p>구해줘 HOMES🏘️</p>
-          <div id="title-line"></div>
-          <p>우리를 위한 집</p>
+        <div class="banner position-relative">
+          <div class="dark-translucent-bg">
+            <div class="video-text">
+              <p>구해줘 HOMES🏘️</p>
+              <div id="title-line"></div>
+              <p>우리를 위한 집</p>
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -68,9 +68,21 @@ export default {
   overflow: hidden;
 }
 
+.banner {
+  background-image: url(@/assets/img/banner.png);
+  height: 100vh;
+  background-size: cover;
+}
+
+.dark-translucent-bg {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+}
+
 .video-text {
   position: absolute;
-  top: 30%;
+  top: 25%;
   width: 100%;
 }
 

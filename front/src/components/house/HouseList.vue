@@ -28,8 +28,9 @@
 
 <script>
 import NavItem from "@/components/house/import/navItem";
-import KakaoMap from "@/components/house/import/KakaoMap";
+import KakaoMap from "@/components/house/KakaoMap";
 import { mapActions } from "vuex";
+
 export default {
   components: { KakaoMap, NavItem },
   data() {

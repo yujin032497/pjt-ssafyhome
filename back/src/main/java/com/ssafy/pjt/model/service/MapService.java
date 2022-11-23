@@ -8,4 +8,6 @@ import java.util.Map;
 public interface MapService {
 
     List<MapItem> getMapList(Map<String, String> map);
+
+    List<MapItem> getDetailList(Map<String, String> map);
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MapServiceImpl implements MapService {
@@ -17,11 +18,9 @@ public class MapServiceImpl implements MapService {
     @Override
     public List<MapItem> getMapList(java.util.Map<String, String> map) {
         List<MapItem> mapItems = new ArrayList<>();
-        if (map.get("type").equals("apt")) {
-            map.put("type", "1");
+        if (map.get("gubn").equals("apt")) {
             mapItems = mapDao.listAptMap(map);
-        } else if (map.get("type").equals("house")) {
-            map.put("type", "0");
+        } else if (map.get("gubn").equals("house")) {
             mapItems = mapDao.listHouseMap(map);
         } else {
             mapItems = null;
@@ -35,6 +34,19 @@ public class MapServiceImpl implements MapService {
                 String ymd = mapItem.getDealYear() + mapItem.getDealMonth() + mapItem.getDealDay();
                 mapItem.setDealYmd(ymd);
             }
+        }
+        return mapItems;
+    }
+
+    @Override
+    public List<MapItem> getDetailList(Map<String, String> map) {
+        List<MapItem> mapItems = new ArrayList<>();
+        if(map.get("gubn").equals("apt")){
+            mapItems = mapDao.detailAptMap(map);
+        } else if(map.get("gubn").equals("house")){
+            mapItems = mapDao.detailHouseMap(map);
+        } else{
+            mapItems = null;
         }
         return mapItems;
     }

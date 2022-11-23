@@ -39,6 +39,25 @@ public class MapRestController {
         }
     }
 
+    @GetMapping("/detail")
+    public ResponseEntity<?> detail(@RequestParam Map<String, String> map) {
+        logger.debug("here");
+        try {
+            List<MapItem> detailList = mapService.getDetailList(map);
+
+            if (detailList != null && detailList.size() > 0) {
+                return new ResponseEntity<>(detailList, HttpStatus.OK);
+            } else if (detailList != null) {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception e) {
+            logger.error(e.toString());
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 //    @GetMapping("/detail")
 //    public ResponseEntity<?> detail(@RequestParam Map<String, String> map) {
 //        try{

@@ -76,7 +76,7 @@
              , sq.lat                                                  '위도'
              , sq.lng                                                  '경도'
              , hd.type                                                 '구분'
-             , AVG(TRIM(REPLACE(hd.dealAmount, ',', '')))              '계약금액'
+             , ROUND(AVG(TRIM(REPLACE(hd.dealAmount, ',', ''))))       '계약금액'
         FROM (SELECT ba.sidoName
                    , ba.gugunName
                    , ba.dongName
@@ -86,14 +86,14 @@
                    , hi.buildYear
                    , hi.lat
                    , hi.lng
-              FROM baseaddress ba,
-                   houseinfo hi
+              FROM dongCode ba,
+                   aptinfo hi
               WHERE ba.dongCode = hi.dongCode
                 AND ba.dongCode LIKE #{dongCode} -- 여기에 동코드 집어넣으면 만사 오케이
              ) sq,
-             housedeal hd
+             aptdeal hd
         WHERE sq.aptCode = hd.aptCode
-          AND hd.type = #{type}
+          AND hd.type = #{type} -- 매매 전월세 구분
         GROUP BY sq.aptCode
         ORDER BY sq.aptCode ASC
                , hd.dealYear DESC
@@ -101,5 +101,37 @@
                , hd.dealDay DESC
                , hd.area DESC
                , hd.dealAmount DESC
+    </select>
+
+    <select id="detailAptMap" parameterType="map" resultMap="apt">
+        SELECT dealAmount '계약금액'
+             , dealYear '계약년도'
+             , dealMonth '계약월'
+             , dealDay '계약일'
+             , area '면적'
+             , floor '층'
+             , type '구분'
+          FROM APTDEAL
+         WHERE APTCODE LIKE #{aptCode}
+           AND type = #{type}
+           AND NOT cancelDealType LIKE 'O'
+         ORDER BY DEALYEAR DESC
+         LIMIT 5
+    </select>
+
+    <select id="detailHouseMap" parameterType="map" resultMap="house">
+        SELECT dealAmount '계약금액'
+             , dealYear '계약년도'
+             , dealMonth '계약월'
+             , dealDay '계약일'
+             , area '면적'
+             , floor '층'
+             , type '구분'
+         FROM HOUSEDEAL
+        WHERE HOUSECODE LIKE #{aptCode}
+          AND type = #{type}
+          AND NOT cancelDealType LIKE 'O'
+        ORDER BY DEALYEAR DESC
+        LIMIT 5
     </select>
 </mapper>

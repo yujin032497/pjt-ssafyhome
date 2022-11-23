@@ -6,7 +6,7 @@
           class="info"
           @click="onEmit"
           v-b-tooltip.hover
-          title="클릭하시면 주변정보를 조회할 수 있습니다.">
+          title="클릭하시면 주변정보와 거래내역을 조회할 수 있습니다.">
           <p class="content">{{ item.aptName }}</p>
           <p class="sub-content">
             평균 {{ item.dealAmount | filterPrice }}만원
@@ -23,27 +23,100 @@
         </div>
       </div>
     </div>
+    <div>
+      <detail-item
+        v-show="expanded"
+        v-for="(data, index) in datas"
+        :key="index"
+        :detailItem="data"></detail-item>
+      <p v-if="datas.length === 0 && check">로딩중입니다</p>
+    </div>
     <div class="dropdown-divider"></div>
   </div>
 </template>
 
 <script>
+import DetailItem from "@/components/house/import/DetailItem";
+import http from "@/util/http-common";
 export default {
   name: "ItemContent",
+  components: { DetailItem },
+  data() {
+    return {
+      datas: [],
+      check: false,
+      expanded: false,
+    };
+  },
   props: {
     item: {
       idx: { type: Number },
+      aptCode: { type: String },
       aptName: { type: String },
       dealAmount: { type: Number },
       fullAddress: { type: String },
       buildYear: { type: String },
     },
+    type: { type: Number },
+    contentType: { type: String },
   },
   methods: {
     onEmit() {
-      console.log(this.item.idx);
       this.$emit("detailIdx", this.item.idx);
+      this.check = true;
+      if (!this.expanded) {
+        console.log("1호출");
+        http
+          .get(
+            `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}`,
+          )
+          .then((response) => {
+            switch (response.status) {
+              case 200:
+                this.datas = response.data;
+                console.log(this.datas);
+                this.expanded = !this.expanded;
+                break;
+            }
+          })
+          .catch(() => {
+            this.datas = [];
+          });
+        // let response = {
+        //   status: 200,
+        //   data: [
+        //     {
+        //       floor: 3,
+        //       price: 5000,
+        //       dealYmd: "2022-11-23",
+        //     },
+        //     {
+        //       floor: 3,
+        //       price: 5000,
+        //       dealYmd: "2022-11-23",
+        //     },
+        //     {
+        //       floor: 3,
+        //       price: 5000,
+        //       dealYmd: "2022-11-23",
+        //     },
+        //   ],
+        // };
+        //
+        // switch (response.status) {
+        //   case 200: {
+        //     this.mockup = response.data;
+        //     this.expanded = !this.expanded;
+        //     break;
+        //   }
+        // }
+      } else {
+        this.expanded = !this.expanded;
+      }
     },
+  },
+  mounted() {
+    console.log("이거", this.item);
   },
   filters: {
     filterPrice: (value) => {

@@ -1,5 +1,6 @@
 <template>
   <div class="item-component">
+    <div class="dropdown-divider"></div>
     <p>{{ detailItem.floor }}층</p>
     <p>{{ detailItem.dealAmount }}만원</p>
     <p>{{ detailItem.area }}</p>
@@ -38,5 +39,7 @@ export default {
 .item-component {
   width: 100%;
   height: auto;
+  margin-left: 1rem;
+  margin-top: 10px;
 }
 </style>

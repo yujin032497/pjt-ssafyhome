@@ -22,6 +22,28 @@
           </div>
         </div>
       </div>
+      <div class="d-flex flex-row category-bar">
+        <b-button
+          class="flex-fill text-center align-self-center btn-category"
+          @click="onCategory(0)">
+          맛집
+        </b-button>
+        <b-button
+          class="flex-fill text-center align-self-center btn-category"
+          @click="onCategory(1)">
+          카페
+        </b-button>
+        <b-button
+          class="flex-fill text-center align-self-center btn-category"
+          @click="onCategory(2)">
+          병원
+        </b-button>
+        <b-button
+          class="flex-fill text-center align-self-center btn-category"
+          @click="onCategory(3)">
+          은행
+        </b-button>
+      </div>
     </div>
     <div>
       <detail-item
@@ -29,7 +51,7 @@
         v-for="(data, index) in datas"
         :key="index"
         :detailItem="data"></detail-item>
-      <p v-if="datas.length === 0 && check">로딩중입니다</p>
+      <p v-if="!check">{{ msg }}</p>
     </div>
     <div class="dropdown-divider"></div>
   </div>
@@ -38,14 +60,16 @@
 <script>
 import DetailItem from "@/components/house/import/DetailItem";
 import http from "@/util/http-common";
+
 export default {
   name: "ItemContent",
   components: { DetailItem },
   data() {
     return {
       datas: [],
-      check: false,
+      check: true,
       expanded: false,
+      msg: "로딩중입니다...",
     };
   },
   props: {
@@ -62,10 +86,11 @@ export default {
   },
   methods: {
     onEmit() {
-      this.$emit("detailIdx", this.item.idx);
-      this.check = true;
+      this.$emit("detailIdx", this.item.idx, this.expanded);
+
       if (!this.expanded) {
-        console.log("1호출");
+        this.check = false;
+        this.expanded = !this.expanded;
         http
           .get(
             `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}`,
@@ -74,45 +99,21 @@ export default {
             switch (response.status) {
               case 200:
                 this.datas = response.data;
-                console.log(this.datas);
-                this.expanded = !this.expanded;
+                this.check = true;
                 break;
             }
           })
           .catch(() => {
             this.datas = [];
+            this.msg = "데이터를 불러오는데 실패하였습니다.";
+            this.expanded = false;
           });
-        // let response = {
-        //   status: 200,
-        //   data: [
-        //     {
-        //       floor: 3,
-        //       price: 5000,
-        //       dealYmd: "2022-11-23",
-        //     },
-        //     {
-        //       floor: 3,
-        //       price: 5000,
-        //       dealYmd: "2022-11-23",
-        //     },
-        //     {
-        //       floor: 3,
-        //       price: 5000,
-        //       dealYmd: "2022-11-23",
-        //     },
-        //   ],
-        // };
-        //
-        // switch (response.status) {
-        //   case 200: {
-        //     this.mockup = response.data;
-        //     this.expanded = !this.expanded;
-        //     break;
-        //   }
-        // }
       } else {
         this.expanded = !this.expanded;
       }
+    },
+    onCategory(cIdx) {
+      this.$emit("categoryIdx", this.item.idx, cIdx);
     },
   },
   mounted() {
@@ -130,10 +131,10 @@ export default {
 <style scoped>
 p {
   margin: 0;
+  margin-left: 1rem;
 }
 
 .search-item {
-  background-color: var(--skyblue);
   height: 130px;
   width: 100%;
 }
@@ -150,7 +151,7 @@ p {
 .fav {
   width: 20%;
   height: 100%;
-  background-color: #2eca6a;
+
   vertical-align: center;
 }
 
@@ -167,5 +168,15 @@ p {
   width: 20px;
   height: 20px;
   margin-top: 50%;
+}
+
+.category-bar {
+  height: 50px;
+  width: 100%;
+}
+
+.btn-category {
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 </style>

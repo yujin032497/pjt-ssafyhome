@@ -41,12 +41,19 @@ public class MapServiceImpl implements MapService {
     @Override
     public List<MapItem> getDetailList(Map<String, String> map) {
         List<MapItem> mapItems = new ArrayList<>();
-        if(map.get("gubn").equals("apt")){
+        if (map.get("gubn").equals("apt")) {
             mapItems = mapDao.detailAptMap(map);
-        } else if(map.get("gubn").equals("house")){
+        } else if (map.get("gubn").equals("house")) {
             mapItems = mapDao.detailHouseMap(map);
-        } else{
+        } else {
             mapItems = null;
+        }
+
+        if (mapItems != null && mapItems.size() > 0) {
+            for (MapItem mapItem : mapItems) {
+                String ymd = mapItem.getDealYear() + mapItem.getDealMonth() + mapItem.getDealDay();
+                mapItem.setDealYmd(ymd);
+            }
         }
         return mapItems;
     }

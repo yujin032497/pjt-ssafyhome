@@ -26,7 +26,8 @@
             :type="searchType"
             :contentType="contentType"
             ref="itemContent"
-            @detailIdx="detail" />
+            @detailIdx="detail"
+            @categoryIdx="manageMarkers" />
 
           <div v-if="locationList.length === 0" class="text-center">
             표시할 컨텐츠가 없습니다.
@@ -83,6 +84,7 @@ export default {
 
       // 마커 지우기
       this.clearMarkers();
+      this.clearContentMarkers();
 
       this.getLocations({
         gubn: this.contentType,
@@ -99,7 +101,6 @@ export default {
       let bounds = new kakao.maps.LatLngBounds();
 
       for (let location of locations) {
-        console.log("이게 먼저");
         geocoder.addressSearch(location.fullAddress, (data, status) => {
           if (status == kakao.maps.services.Status.OK) {
             const position = new kakao.maps.LatLng(data[0].y, data[0].x);
@@ -135,31 +136,35 @@ export default {
       this.infoWindows.push(infoWindow);
       this.positions.push(position);
     },
-    detail(idx) {
+    detail(idx, expanded) {
       this.map.setCenter(this.positions[idx]);
       this.clearContentMarkers();
-      // 클릭시 주소를 가져온다.
-      this.nearTarget = this.locationList[idx].fullAddress;
+      if (!expanded) {
+        // 클릭시 주소를 가져온다.
+        this.nearTarget = this.locationList[idx].fullAddress;
 
-      // 주변 조회를 태운다.
-      // 1. 카카오 키워드 검색을 위한 객체 생성.
-      const ps = new kakao.maps.services.Places();
+        // 주변 조회를 태운다.
+        // 1. 카카오 키워드 검색을 위한 객체 생성.
+        const ps = new kakao.maps.services.Places();
 
-      const keyword = ["맛집", "카페", "병원", "은행"];
+        const keyword = ["맛집", "카페", "병원", "은행"];
 
-      for (let idx = 0; idx < 4; idx++) {
-        ps.keywordSearch(
-          this.nearTarget + " " + keyword[idx],
-          (data, status) => {
-            if (status == kakao.maps.services.Status.OK) {
-              this.setMarkerGroup(idx, data);
+        for (let idx = 0; idx < 4; idx++) {
+          ps.keywordSearch(
+            this.nearTarget + " " + keyword[idx],
+            (data, status) => {
+              if (status == kakao.maps.services.Status.OK) {
+                this.setMarkerGroup(idx, data);
 
-              if (idx == 0) {
-                this.displayMarkerGroup(0);
+                console.log(idx, data);
+
+                if (idx == 0) {
+                  this.displayMarkerGroup(0);
+                }
               }
-            }
-          },
-        );
+            },
+          );
+        }
       }
     },
 
@@ -174,17 +179,16 @@ export default {
       const keyword = ["맛집", "카페", "병원", "은행"];
 
       const img = new kakao.maps.MarkerImage(
-        "@/assets/img/marker_location.png",
-        new kakao.maps.Size(30, 40),
-        { offset: new kakao.maps.Point(15, 29) },
+        require("@/assets/img/marker_location.png"),
+        new kakao.maps.Size(37, 40),
       );
 
       const now = contentList[contentIdx];
       for (let content of contents) {
         const marker = new kakao.maps.Marker({
           position: new kakao.maps.LatLng(content.y, content.x),
+          image: img,
           title: content.place_name,
-          img: img,
           clickable: true,
         });
         const link = `https://map.kakao.com/?q=${content.place_name}`;
@@ -202,32 +206,42 @@ export default {
           content: windowTemplate,
         });
 
-        kakao.maps.event.addListener(marker, "click", () => {
+        kakao.maps.event.addListener(marker, "mouseover", () => {
           window.open(this.map, marker);
         });
+        kakao.maps.event.addListener(marker, "mouseout", () => {
+          window.close();
+        });
 
-        const data = { marker: marker, window: window };
+        const data = { marker: marker, window: window, position: content };
         now.push(data);
       }
     },
 
-    displayMarkerGroup(contentIdx) {
+    displayMarkerGroup(...contentIdx) {
       const contentList = [
         this.markersFood,
         this.markersCafe,
         this.markersHospital,
         this.markersBank,
       ];
+      const bounds = new kakao.maps.LatLngBounds();
 
-      const markerList = contentList[contentIdx];
-      for (let i = 0; i < markerList.length; i++) {
-        const marker = markerList[i].marker;
+      contentIdx.forEach((idx) => {
+        const contents = contentList[idx];
+        console.log("컨텐츠", contents);
+        contents.forEach((data) => {
+          data.marker.setMap(this.map);
 
-        marker.setMap(this.map);
-      }
+          const pos = data.position;
+          bounds.extend(new kakao.maps.LatLng(pos.y, pos.x));
+        });
+      });
+      console.log(bounds.toString());
+      this.map.setBounds(bounds);
     },
 
-    hideMarkerGroup(contentIdx) {
+    hideMarkerGroup(...contentIdx) {
       const contentList = [
         this.markersFood,
         this.markersCafe,
@@ -235,14 +249,21 @@ export default {
         this.markersBank,
       ];
 
-      const markerList = contentList[contentIdx];
-      for (let i = 0; i < markerList.length; i++) {
-        const marker = markerList[i].marker;
-        const window = markerList[i].window;
-
-        marker.setMap(null);
-        window.close();
-      }
+      console.log(contentIdx);
+      contentIdx.forEach((idx) => {
+        const contents = contentList[idx];
+        contents.forEach((data) => {
+          data.marker.setMap(null);
+        });
+      });
+      // const markerList = contentList[contentIdx];
+      // for (let i = 0; i < markerList.length; i++) {
+      //   const marker = markerList[i].marker;
+      //   const window = markerList[i].window;
+      //
+      //   marker.setMap(null);
+      //   window.close();
+      // }
     },
 
     clearMarkers() {
@@ -260,25 +281,29 @@ export default {
     },
 
     clearContentMarkers() {
-      const contentList = [
-        this.markersFood,
-        this.markersCafe,
-        this.markersHospital,
-        this.markersBank,
-      ];
+      this.markersFood.forEach((data) => {
+        data.marker.setMap(null);
+        console.log(data.marker);
+      });
+      this.markersCafe.forEach((data) => {
+        data.marker.setMap(null);
+      });
+      this.markersHospital.forEach((data) => {
+        data.marker.setMap(null);
+      });
+      this.markersBank.forEach((data) => {
+        data.marker.setMap(null);
+      });
 
-      for (let content of contentList) {
-        console.log(content.length);
-        for (let idx = 0; idx < content.length; idx++) {
-          const marker = content[idx].marker;
-          const window = content[idx].window;
-
-          marker.setMap(null);
-          window.close();
-
-          content = [];
-        }
-      }
+      this.markersFood = [];
+      this.markersCafe = [];
+      this.markersHospital = [];
+      this.markersBank = [];
+    },
+    manageMarkers(idx, cIdx) {
+      console.log(idx, cIdx);
+      this.hideMarkerGroup(0, 1, 2, 3);
+      this.displayMarkerGroup(cIdx);
     },
   },
   name: "KakaoMap.vue",

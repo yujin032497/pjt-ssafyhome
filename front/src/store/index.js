@@ -446,8 +446,27 @@ export default new Vuex.Store({
       });
     },
 
-    updateAnswerQna() {
-      // 답변달기
+    updateAnswerQna(context, payload) {
+      console.log("요잇네! 답변!");
+      console.log(payload.qna);
+      http
+        .put(`/qna/updateAnswer/${payload.qna.qnaNo}`, payload.qna)
+        .then((response) => {
+          switch (response.status) {
+            case 200:
+              alert("답변완료!!");
+              payload.callback();
+              break;
+
+            case 400:
+              alert("잘못된 요청입니다.");
+              break;
+
+            case 500:
+              alert("서버 오류!!!");
+              break;
+          }
+        });
     },
 
     getLocations(context, payload) {

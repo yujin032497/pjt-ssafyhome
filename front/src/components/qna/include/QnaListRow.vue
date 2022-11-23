@@ -6,11 +6,10 @@
       }}</router-link>
     </b-td>
     <b-td class="center text-center">{{ registerTime | dateFormat }}</b-td>
-    <b-td :class="state === '1' ? 'wait' : 'completed'"
-      ><b-alert show class="state">{{
-        state === "1" ? "답변대기" : "답변완료"
-      }}</b-alert></b-td
-    >
+    <b-td
+      ><b-alert v-if="state === '1'" show class="wait">답변대기</b-alert>
+      <b-alert v-else show class="done">답변완료</b-alert>
+    </b-td>
   </b-tr>
 </template>
 
@@ -36,13 +35,10 @@ export default {
 .center {
   vertical-align: middle !important;
 }
+.done {
+  background-color: var(--pink);
+}
 .wait {
-  color: #000;
-}
-.completed {
-  color: blue;
-}
-.state {
   background-color: var(--skyblue);
 }
 .font-bold {

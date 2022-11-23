@@ -11,7 +11,12 @@
       </b-row>
       <b-row class="mb-1">
         <b-col class="text-right">
-          <b-button variant="outline-primary" @click="movePage">등록</b-button>
+          <b-button
+            v-if="loginUser.isAdmin !== 1"
+            variant="outline-primary"
+            @click="movePage">
+            등록</b-button
+          >
         </b-col>
       </b-row>
       <b-row>

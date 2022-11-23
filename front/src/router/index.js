@@ -1,3 +1,4 @@
+import store from "@/store";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import HomeView from "../views/HomeView.vue";
@@ -81,9 +82,18 @@ const routes = [
         path: "list",
         name: "QnaList",
         component: () => import("@/components/qna/QnaList.vue"),
+        beforeEnter: (to, from, next) => {
+          // 만약 로그인 상태라면
+          if (store.state.loginUser.id !== undefined) {
+            return next();
+          }
+
+          alert("로그인이 필요한 서비스입니다.");
+          next("/user/loginForm");
+        },
       },
       {
-        path: "detail/:articleNo",
+        path: "detail/:qnaNo",
         name: "QnaDetail",
         component: () => import("@/components/qna/QnaDetail.vue"),
       },
@@ -93,7 +103,7 @@ const routes = [
         component: () => import("@/components/qna/QnaWrite.vue"),
       },
       {
-        path: "modify/:articleNo",
+        path: "modify/:qnaNo",
         name: "QnaModify",
         component: () => import("@/components/qna/QnaModify.vue"),
       },

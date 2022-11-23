@@ -7,11 +7,10 @@
     </b-td>
     <b-td class="center text-center">{{ userId }}</b-td>
     <b-td class="center text-center">{{ registerTime | dateFormat }}</b-td>
-    <b-td :class="state === '1' ? 'wait' : 'completed'"
-      ><b-alert show class="state">{{
-        state === "1" ? "답변미완료" : "답변완료"
-      }}</b-alert></b-td
-    >
+    <b-td
+      ><b-alert v-if="state === '1'" show class="wait">미답변</b-alert>
+      <b-alert v-else show class="done">답변완료</b-alert>
+    </b-td>
   </b-tr>
 </template>
 
@@ -45,8 +44,11 @@ export default {
 .completed {
   color: blue;
 }
-.state {
+.wait {
   background-color: var(--skyblue);
+}
+.done {
+  background-color: var(--pink);
 }
 .font-bold {
   font-weight: bold;

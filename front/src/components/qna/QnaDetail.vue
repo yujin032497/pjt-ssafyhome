@@ -6,24 +6,25 @@
           <b-card
             class="mb-2"
             border-variant="dark"
-            :header-html="`<h3>${qna.qnaNo}. ${qna.subject}</h3></div><div>${qna.registerTime}</h6>`">
+            :header-html="`<h3>${qna.subject}</h3></div><div>${qna.registerTime}</h6>`">
             <b-card-body class="text-left">
               <div v-html="message"></div>
             </b-card-body>
           </b-card>
         </b-col>
       </b-row>
-      <b-row v-if="qna.state === 0" class="mb-1">
+      <b-row v-if="qna.state === '0'" class="mb-1">
         <b-col class="text-left">
           <p>답변내용</p>
-          <b-alert show variant="secondary"
-            ><a href="#" class="alert-link">Secondary Alert</a></b-alert
-          >
+          <b-alert show variant="secondary">
+            <div v-html="answer"></div>
+          </b-alert>
         </b-col>
       </b-row>
-      <b-row class="mb-1">
+      <b-row v-if="loginUser.isAdmin === 1" class="mb-1">
         <b-col class="text-left">
           <b-form-group
+            v-if="qna.state === '1'"
             label-cols="12"
             id="content"
             label="답변내용"
@@ -32,11 +33,14 @@
             <b-form-textarea
               id="content"
               placeholder="답변내용 입력..."
-              v-model="input.content"
+              v-model="input.contentA"
               rows="15"
               max-row="20"
               ref="content" />
           </b-form-group>
+          <b-alert v-if="qna.state === '0'" show variant="secondary">
+            <div v-html="answer"></div>
+          </b-alert>
         </b-col>
       </b-row>
       <b-row class="mb-1">
@@ -70,13 +74,18 @@ export default {
 
   computed: {
     message() {
+      console.log(this.qna.contentA);
       if (this.qna.content) return this.qna.content.split("\n").join("<br>");
+      return "";
+    },
+    answer() {
+      if (this.qna.contentA) return this.qna.contentA.split("\n").join("<br>");
       return "";
     },
 
     input() {
       return {
-        content: "",
+        contentA: "",
       };
     },
     ...mapGetters({ loginUser: "loginUser" }),
@@ -88,14 +97,17 @@ export default {
     this.getQna(qnaNo);
   },
   methods: {
-    ...mapActions({ getQna: "getQna", deleteQna: "deleteQna" }),
+    ...mapActions({
+      getQna: "getQna",
+      deleteQna: "deleteQna",
+      updateAnswerQna: "updateAnswerQna",
+    }),
 
     removeQna() {
       if (confirm("삭제하시겠습니까??")) {
         const payload = {
           qnaNo: this.$route.params,
           callback: () => {
-            console.log("ok22");
             this.$router.push({ path: "/qna/list" });
           },
         };
@@ -125,7 +137,8 @@ export default {
         const payload = {
           qna: {
             qnaNo: this.$route.params.qnaNo,
-            content: this.input.content,
+            contentA: this.input.contentA,
+            state: 0,
           },
           callback: () => {
             console.log("callback!! 호출", this);
@@ -133,11 +146,7 @@ export default {
             this.moveList();
           },
         };
-        if (this.type == "create") {
-          this.updateAnswerQna(payload);
-        } else {
-          //this.modifyBoard(payload);
-        }
+        this.updateAnswerQna(payload);
       }
     },
   },

@@ -12,7 +12,7 @@ public interface QnaDao {
 	
 	public List<Qna> getListQna(Map<String, Object> map);
 	
-	public int getTotalQna(Map<String, Object> map);
+	public int getTotalQna();
 	
 	public Qna getQna(int QnaNo);
 	
@@ -23,5 +23,7 @@ public interface QnaDao {
 	public int deleteQna(int QnaNo);
 
 	public void deleteAll();
+
+	public List<Qna> getListQnaAll();
 
 }

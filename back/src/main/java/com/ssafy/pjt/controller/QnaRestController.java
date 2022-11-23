@@ -52,11 +52,28 @@ public class QnaRestController {
 		}
 	}
 	
+	@GetMapping("/listAll")
+	public ResponseEntity<?> list() throws Exception {
+		//logger.debug("list parameter : {}", map);
+		try {
+			List<Qna> listQna = QnaService.getListAllQna();
+			if(listQna!=null && listQna.size()>0) {
+				return new ResponseEntity<List<Qna>>(listQna, HttpStatus.OK);
+			}else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+	}
+	
 	@GetMapping("/total")
 	public ResponseEntity<?> total(@RequestParam Map<String, String> map) throws Exception {
 		logger.debug("total parameter : {}", map);
 		try {
-			int total = QnaService.getTotalQna(map);
+			int total = QnaService.getTotalQna();
 			if(total>0) {
 				return new ResponseEntity<Integer>(total, HttpStatus.OK);
 			}else {
@@ -74,11 +91,11 @@ public class QnaRestController {
 		try {
 			logger.debug("write Qna : {}", Qna);
 			// fixture
-			User user = new User("ssafy1", "1234", "김싸피", "서울시 강남구 역삼동", "010-1111-2222", 0);
-//			User user = (User) session.getAttribute("loginUser");
+			
+			User user = new User();
 			user.setId(Qna.getUserId());
 			Qna.setUserId(user.getId());
-
+			logger.debug("write Qna : {}", Qna);
 			QnaService.writeQna(Qna);
 
 			return new ResponseEntity<Void>(HttpStatus.OK);
@@ -93,7 +110,6 @@ public class QnaRestController {
 	public ResponseEntity<?>detail(@PathVariable("QnaId") String QnaId) {
 		logger.debug("view parameter : {}", QnaId);
 		try {
-			QnaService.updateHit(Integer.parseInt(QnaId));
 			Qna Qna = QnaService.getQna(Integer.parseInt(QnaId));
 			logger.debug(Qna.toString());
 			if(Qna!=null) {
@@ -110,7 +126,7 @@ public class QnaRestController {
 	@DeleteMapping("/{QnaNo}")
 	public ResponseEntity<?> delete(@PathVariable("QnaNo") String QnaNo) throws Exception {
 		try {
-			//logger.debug("delete QnaNo : {}", QnaNo);
+			logger.debug("delete QnaNo : {}", QnaNo);
 			QnaService.deleteQna(Integer.parseInt(QnaNo));
 
 			return new ResponseEntity<Void>(HttpStatus.OK);

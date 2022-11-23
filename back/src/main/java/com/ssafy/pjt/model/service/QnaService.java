@@ -10,7 +10,7 @@ public interface QnaService {
 	
 	public List<Qna> getListQna(Map<String, String> map) throws Exception;
 	
-	public int getTotalQna(Map<String, String> map) throws Exception;
+	public int getTotalQna() throws Exception;
 	
 	public Qna getQna(int QnaNo) throws Exception;
 	
@@ -21,4 +21,6 @@ public interface QnaService {
 	public int deleteQna(int QnaNo) throws Exception;
 
 	public void deleteAll() throws Exception;
+
+	public List<Qna> getListAllQna() throws Exception;
 }

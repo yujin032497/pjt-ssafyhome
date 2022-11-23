@@ -13,14 +13,13 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Qna { // 1:1문의하기
 
-	private String qna_no;
+	private int qnaNo;
 	private String subject;
 	private String content;
 	private String userId;
 	private String state;
 	private String answer;
 	private String content_a;
-	
-	
+	private String registerTime;
 	
 }

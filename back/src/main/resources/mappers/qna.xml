@@ -29,7 +29,7 @@
 	
 
 	<select id="getListQna" parameterType="map" resultMap="qnaAll">
-		select b.qna_no, b.subject, b.register_time, b.state
+		select b.qna_no, b.subject, b.register_time, b.state, b.content_a, b.id
 		from qna b, user m 
 		where b.id = m.id
 		and b.id = #{userId}
@@ -37,7 +37,7 @@
 	</select>
 	
 	<select id="getListQnaAll" resultMap="qnaAll">
-		select b.qna_no, b.id, b.subject, b.register_time, b.state
+		select b.qna_no, b.id, b.subject, b.register_time, b.state, b.content_a, b.id
 		from qna b, user m 
 		where b.id = m.id
 		order by b.qna_no desc
@@ -52,7 +52,7 @@
 	</insert>
 	
 	<select id="getQna" parameterType="int" resultMap="qnaAll">
-		select b.qna_no, b.subject, b.content, b.register_time, b.state
+		select b.qna_no, b.subject, b.content, b.register_time, b.state, b.content_a, b.id
 		from qna b, user m
 		where b.id = m.id
 		and b.qna_no = #{QnaNo}
@@ -60,7 +60,7 @@
 	
 	<update id="updateQna" parameterType="qna">
 		update qna
-		set subject = #{subject}, content = #{content}, register_time=now()
+		set content_a = #{contentA}, register_time=now(), state = #{state}
 		where Qna_no = #{qnaNo}
 	</update>
 	

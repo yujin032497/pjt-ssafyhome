@@ -136,7 +136,7 @@ public class QnaRestController {
 		}
 	}
 
-	@PutMapping("/modify/{QnaNo}")
+	@PutMapping("/updateAnswer/{QnaNo}")
 	public ResponseEntity<?> modify(@RequestBody Qna Qna) throws Exception {
 		try {
 			logger.debug("modify Qna : {}", Qna);

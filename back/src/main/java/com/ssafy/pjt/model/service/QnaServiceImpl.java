@@ -54,6 +54,7 @@ public class QnaServiceImpl implements QnaService{
 
 	@Override
 	public int updateQna(Qna QnaDto) throws Exception {
+		System.out.println("modifyQna");
 		return QnaDao.updateQna(QnaDto);
 	}
 

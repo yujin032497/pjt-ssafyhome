@@ -18,8 +18,7 @@ public class Qna { // 1:1문의하기
 	private String content;
 	private String userId;
 	private String state;
-	private String answer;
-	private String content_a;
+	private String contentA;
 	private String registerTime;
 	
 }

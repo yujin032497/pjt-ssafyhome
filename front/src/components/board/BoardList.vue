@@ -20,7 +20,12 @@
               placeholder="검색어를 입력하세요." />
             <b-button class="search-btn" @click="search">검색</b-button>
           </div>
-          <b-button variant="outline-primary" @click="movePage">등록</b-button>
+          <b-button
+            v-if="loginUser.isAdmin === 1"
+            variant="outline-primary"
+            @click="movePage"
+            >등록</b-button
+          >
         </b-col>
       </b-row>
       <b-row>
@@ -131,6 +136,7 @@ export default {
         spp: 10,
       };
     },
+    ...mapGetters({ loginUser: "loginUser" }),
   },
 };
 

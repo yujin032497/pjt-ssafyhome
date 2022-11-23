@@ -5,10 +5,11 @@
         subject
       }}</router-link>
     </b-td>
+    <b-td class="center text-center">{{ userId }}</b-td>
     <b-td class="center text-center">{{ registerTime | dateFormat }}</b-td>
     <b-td :class="state === '1' ? 'wait' : 'completed'"
       ><b-alert show class="state">{{
-        state === "1" ? "답변대기" : "답변완료"
+        state === "1" ? "답변미완료" : "답변완료"
       }}</b-alert></b-td
     >
   </b-tr>
@@ -21,6 +22,8 @@ export default {
   props: {
     qnaNo: Number,
     subject: String,
+    userId: String,
+    userName: String,
     registerTime: String,
     state: String,
   },

@@ -5,8 +5,8 @@
     </div>
 
     <div class="map-info">
-      <div class="search-window p-3">
-        <div
+      <div class="search-window p-3 d-flex">
+        <!--        <div
           class="search-bar p-auto d-flex align-content-center justify-content-center">
           <b-button @click="search"
             >검색 테스트 버튼 {{ contentType }}
@@ -15,6 +15,12 @@
         <div class="tag-bar py-1 d-flex">
           <div class="tag text-center">검색태그</div>
           <div class="tag text-center">검색태그</div>
+        </div>-->
+        <search-condition
+          @changeDong="changeDong"
+          @changeType="changeType"></search-condition>
+        <div class="search-btn h-auto">
+          <b-button class="w-100" @click="search">검색</b-button>
         </div>
       </div>
       <div>
@@ -41,6 +47,7 @@
 <script>
 import ItemContent from "@/components/house/ItemContent";
 import { mapActions, mapGetters } from "vuex";
+import SearchCondition from "@/components/house/import/SearchCondition";
 
 export default {
   data() {
@@ -61,6 +68,7 @@ export default {
     };
   },
   components: {
+    SearchCondition,
     ItemContent,
   },
   props: {
@@ -86,11 +94,20 @@ export default {
       this.clearMarkers();
       this.clearContentMarkers();
 
+      console.log(this.contentType, this.searchType, this.dongCode);
       this.getLocations({
         gubn: this.contentType,
         type: this.searchType,
-        dongCode: "1111011500",
+        dongCode: this.dongCode,
       });
+    },
+
+    changeDong(code) {
+      this.dongCode = code;
+    },
+
+    changeType(type) {
+      this.searchType = type;
     },
 
     setKakaoMarkers(locations) {
@@ -350,29 +367,15 @@ export default {
 
 .search-window {
   width: 100%;
-  height: 9vh;
+  height: 10vh;
   /*background-color: var(--pink);*/
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.search-bar {
-  height: 53%;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-}
-
-.tag-bar {
-  height: 47%;
-  background-color: var(--pink);
-}
-
-.tag {
-  width: 100px;
+.search-btn {
+  width: 20%;
   height: 100%;
-  border-radius: 50px;
-  margin-right: 5px;
-  background-color: var(--deep-skyblue);
 }
-
 .map-in {
   width: calc(100% - 514px);
   height: 100%;

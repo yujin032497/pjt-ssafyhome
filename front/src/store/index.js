@@ -17,6 +17,9 @@ export default new Vuex.Store({
     qnas: [],
     qna: {},
     locations: [],
+    sidos: [{ value: null, text: "시/도 선택" }],
+    guguns: [{ value: null, text: "구/군 선택" }],
+    dongs: [{ value: null, text: "동 선택" }],
   },
   getters: {
     loginUser(state) {
@@ -88,6 +91,30 @@ export default new Vuex.Store({
       }
       state.locations = payload.locations;
     },
+    CLEAR_SIDO_LIST(state) {
+      state.sidos = [{ value: null, text: "시/도 선택" }];
+    },
+    CLEAR_GUGUN_LIST(state) {
+      state.guguns = [{ value: null, text: "구/군 선택" }];
+    },
+    CLEAR_DONG_LIST(state) {
+      state.guguns = [{ value: null, text: "동 선택" }];
+    },
+    SET_SIDO_LIST(state, sidos) {
+      sidos.forEach((sido) => {
+        state.sidos.push({ value: sido.sidoCode, text: sido.sidoName });
+      });
+    },
+    SET_GUGUN_LIST(state, guguns) {
+      guguns.forEach((gugun) => {
+        state.guguns.push({ value: gugun.gugunCode, text: gugun.gugunName });
+      });
+    },
+    SET_DONG_LIST(state, dongs) {
+      dongs.forEach((dong) => {
+        state.dongs.push({ value: dong.dongCode, text: dong.dongName });
+      });
+    },
   },
   actions: {
     getUser(context, payload) {
@@ -158,18 +185,24 @@ export default new Vuex.Store({
       });
     },
 
-    selectAccountList(context) {
-      http.get("/user/list").then((response) => {
-        console.log(response);
-        switch (response.status) {
-          case 200:
-            context.commit({ type: "ACCOUNTS", accounts: response.data });
-            break;
-          case 500:
-            alert("내부 서버 에러");
-            break;
-        }
-      });
+    selectAccountList(context, payload) {
+      console.log(payload);
+      http
+        .get(`/user/list?key=${payload.key}&value=${payload.value}`)
+        .then((response) => {
+          console.log(response);
+          switch (response.status) {
+            case 200:
+              context.commit({ type: "ACCOUNTS", accounts: response.data });
+              break;
+            case 204:
+              context.commit({ type: "ACCOUNTS", accounts: [] });
+              break;
+            case 500:
+              alert("내부 서버 에러");
+              break;
+          }
+        });
     },
 
     updateAccount(context, payload) {
@@ -361,51 +394,41 @@ export default new Vuex.Store({
               break;
           }
         });
-
-      // let resp = {
-      //   status: 200,
-      //   locations: [
-      //     {
-      //       title: "목업1(광화문스페이스1차)",
-      //       price: 9999,
-      //       address: "서울특별시 종로구 사직동 9",
-      //       dealym: "202209",
-      //     },
-      //     {
-      //       title: "목업2",
-      //       price: 9999,
-      //       address: "목업시 목업구 목업동",
-      //       dealym: "202209",
-      //     },
-      //     {
-      //       title: "목업3",
-      //       price: 9999,
-      //       address: "목업시 목업구 목업동",
-      //       dealym: "202209",
-      //     },
-      //     {
-      //       title: "목업4",
-      //       price: 9999,
-      //       address: "목업시 목업구 목업동",
-      //       dealym: "202209",
-      //     },
-      //   ],
-      // };
-      //
-      // switch (resp.status) {
-      //   case 200:
-      //     // payload
-      //     // console.log(response.data);
-      //     context.commit({
-      //       type: "SET_LOCATIONS",
-      //       locations: resp.data,
-      //     }); // payload
-      //     break;
-      // }
     },
 
     clearLocations(context) {
       context.commit({ type: "CLEAR_LOCATIONS" });
+    },
+
+    getSido(context) {
+      http
+        .get(`/map/sido`)
+        .then(({ data }) => {
+          context.commit("SET_SIDO_LIST", data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getGugun(context, sido) {
+      http
+        .get(`/map/gugun?sido=${sido}`)
+        .then(({ data }) => {
+          context.commit("SET_GUGUN_LIST", data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    getDong(context, gugun) {
+      http
+        .get(`/map/dong?gugun=${gugun}`)
+        .then(({ data }) => {
+          context.commit("SET_DONG_LIST", data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
 

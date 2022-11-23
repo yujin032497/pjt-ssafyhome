@@ -127,7 +127,7 @@ export default {
 
 <style scoped>
 section {
-  height: 64vh !important;
+  height: 66vh !important;
   align-content: center;
 }
 

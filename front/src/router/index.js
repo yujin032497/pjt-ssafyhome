@@ -55,6 +55,11 @@ const routes = [
         component: () => import("@/components/user/UserDetail.vue"),
       },
       {
+        path: "modify/:id/:mode",
+        name: "UserModifyAdm",
+        component: () => import("@/components/user/UserModify.vue"),
+      },
+      {
         path: "modify/:id",
         name: "UserModify",
         component: () => import("@/components/user/UserModify.vue"),
@@ -68,6 +73,11 @@ const routes = [
         path: "regist",
         name: "UserRegist",
         component: () => import("@/components/user/UserRegist.vue"),
+      },
+      {
+        path: "find",
+        name: "UserFind",
+        component: () => import("@/components/user/UserFind.vue"),
       },
     ],
   },

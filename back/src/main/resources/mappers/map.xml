@@ -25,40 +25,36 @@
     </resultMap>
 
     <select id="listHouseMap" parameterType="map" resultMap="house">
-        SELECT sq.sidoName                     '시도'
-             , sq.gugunName                    '구군'
-             , sq.dongName                     '동'
-             , sq.jibun                        '지번'
-             , sq.aptCode                      '아파트코드'
-             , sq.aptName                      '아파트명'
-             , sq.buildYear                    '건축년도'
-             , sq.lat                          '위도'
-             , sq.lng                          '경도'
-             , hd.dealYear                     '계약년도'
-             , hd.dealMonth                    '계약월'
-             , hd.dealDay                      '계약일'
-             , hd.area                         '면적'
-             , hd.floor                        '층'
-             , hd.type                         '구분'
-             , REPLACE(hd.dealAmount, ',', '') '계약금액'
+        SELECT sq.sidoName                                             '시도'
+	 , sq.gugunName                                            '구군'
+	 , sq.dongName                                             '동'
+	 , sq.jibun                                                '지번'
+	 , sq.houseCode                                            '아파트코드'
+	 , sq.houseName                                            '아파트명'
+	 , sq.buildYear                                            '건축년도'
+	 , sq.lat                                                  '위도'
+	 , sq.lng                                                  '경도'
+	 , hd.type                                                 '구분'
+	 , MAX(hd.dealAmount)      '계약금액'
         FROM (SELECT ba.sidoName
                    , ba.gugunName
                    , ba.dongName
                    , hi.jibun
-                   , hi.aptCode
-                   , hi.aptName
+                   , hi.houseCode
+                   , hi.houseName
                    , hi.buildYear
                    , hi.lat
                    , hi.lng
-              FROM baseaddress ba,
+              FROM dongCode ba,
                    houseinfo hi
               WHERE ba.dongCode = hi.dongCode
-                AND ba.dongCode LIKE #{dongCode} -- 여기에 동코드 집어넣으면 만사 오케이
-             ) sq,
-             housedeal hd
-        WHERE sq.aptCode = hd.aptCode
-          AND hd.type = #{type}
-        ORDER BY sq.aptCode ASC
+                AND ba.dongCode LIKE 1111011500 -- 여기에 동코드 집어넣으면 만사 오케이
+             ) sq, housedeal hd
+        WHERE sq.houseCode = hd.houseCode
+          AND hd.type = 1 -- 매매 전월세 구분
+          AND NOT sq.houseName REGEXP('^[0-9]+|^\\(')
+        GROUP BY sq.houseCode
+        ORDER BY sq.houseCode ASC
                , hd.dealYear DESC
                , hd.dealMonth DESC
                , hd.dealDay DESC
@@ -111,12 +107,12 @@
              , area '면적'
              , floor '층'
              , type '구분'
-          FROM APTDEAL
-         WHERE APTCODE LIKE #{aptCode}
-           AND type = #{type}
-           AND NOT cancelDealType LIKE 'O'
-         ORDER BY DEALYEAR DESC
-         LIMIT 5
+        FROM APTDEAL
+        WHERE APTCODE LIKE #{aptCode}
+          AND type = #{type}
+          AND IFNULL(cancelDealType, 'NULL') LIKE 'NULL'
+        ORDER BY DEALYEAR DESC
+            LIMIT 5
     </select>
 
     <select id="detailHouseMap" parameterType="map" resultMap="house">
@@ -127,11 +123,33 @@
              , area '면적'
              , floor '층'
              , type '구분'
-         FROM HOUSEDEAL
+        FROM HOUSEDEAL
         WHERE HOUSECODE LIKE #{aptCode}
           AND type = #{type}
-          AND NOT cancelDealType LIKE 'O'
+          AND IFNULL(cancelDealType, 'NULL') LIKE 'NULL'
         ORDER BY DEALYEAR DESC
-        LIMIT 5
+            LIMIT 5
     </select>
+
+    <select id="getSido" resultType="AddressCode">
+        select left(sidoCode,2) sidoCode, sidoName
+        from sidocode
+        order by sidoCode
+    </select>
+
+    <select id="getGugun" parameterType="string" resultType="AddressCode">
+        select left(gugunCode,5) gugunCode, gugunName
+        from guguncode
+        where left(gugunCode,2) = #{sido}
+        order by gugunCode
+    </select>
+
+    <select id="getDong" parameterType="string" resultType="AddressCode">
+        select distinct dongName, dongCode
+        from dongCode
+        where left(dongCode, 5) = #{gugun}
+          and dongName is not null
+        order by dongName
+    </select>
+
 </mapper>

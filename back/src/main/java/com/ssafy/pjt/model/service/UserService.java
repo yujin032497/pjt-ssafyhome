@@ -3,6 +3,7 @@ package com.ssafy.pjt.model.service;
 import com.ssafy.pjt.model.dto.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
 
@@ -16,5 +17,11 @@ public interface UserService {
 
     User detail(User user) throws Exception;
 
-    List<User> getList() throws Exception;
+    List<User> getList(Map<String, String> map) throws Exception;
+
+    String getUserId(Map<String, String> map);
+
+    int updatePassword(Map<String, String> map);
+
+    String getUserId2(Map<String, String> map);
 }

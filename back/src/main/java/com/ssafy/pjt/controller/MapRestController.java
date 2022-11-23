@@ -1,5 +1,6 @@
 package com.ssafy.pjt.controller;
 
+import com.ssafy.pjt.model.dto.AddressCode;
 import com.ssafy.pjt.model.dto.MapItem;
 import com.ssafy.pjt.model.service.MapService;
 import org.slf4j.Logger;
@@ -58,10 +59,21 @@ public class MapRestController {
         }
     }
 
-//    @GetMapping("/detail")
-//    public ResponseEntity<?> detail(@RequestParam Map<String, String> map) {
-//        try{
-//
-//        }
-//    }
+    @GetMapping("/sido")
+    public ResponseEntity<List<AddressCode>> sido() throws Exception {
+        logger.info("sido - 호출");
+        return new ResponseEntity<List<AddressCode>>(mapService.getSido(), HttpStatus.OK);
+    }
+
+    @GetMapping("/gugun")
+    public ResponseEntity<List<AddressCode>> sido(@RequestParam("sido") String sido) throws Exception {
+        return new ResponseEntity<List<AddressCode>>(mapService.getGugunInSido(sido), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/dong")
+    public ResponseEntity<List<AddressCode>> dong(@RequestParam("gugun") String gugun) throws Exception {
+        return new ResponseEntity<List<AddressCode>>(mapService.getDongInGugun(gugun), HttpStatus.OK);
+    }
+    
 }

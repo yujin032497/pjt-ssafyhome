@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -52,7 +54,8 @@ public class UserDaoTest extends AbstractTest {
 
     @Test
     public void listTest() {
-        List<User> list = userDao.selectUserList();
+        Map<String, String> map = new HashMap<>();
+        List<User> list = userDao.selectUserList(map);
         logger.debug(list.toString());
     }
 

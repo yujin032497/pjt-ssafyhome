@@ -9,6 +9,7 @@
           type="text"
           id="userid"
           placeholder="아이디..."
+          :disabled="type === 'modify'"
           v-model="input.id" />
       </div>
     </div>

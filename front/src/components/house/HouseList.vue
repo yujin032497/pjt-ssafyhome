@@ -22,6 +22,7 @@
         <div class="test"></div>
       </div>
     </b-navbar>
+    <kakao-map class="map" :contentType="contentType"></kakao-map>
   </div>
 </template>
 
@@ -31,7 +32,7 @@ import KakaoMap from "@/components/house/KakaoMap";
 import { mapActions } from "vuex";
 
 export default {
-  components: { NavItem },
+  components: { KakaoMap, NavItem },
   data() {
     return {
       content: ["아파트", "연립/다세대"],

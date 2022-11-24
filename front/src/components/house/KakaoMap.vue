@@ -5,26 +5,25 @@
     </div>
 
     <div class="map-info">
-      <div class="search-window p-3">
-        <div
-          class="search-bar p-auto d-flex align-content-center justify-content-center">
-          <b-button @click="search"
-            >검색 테스트 버튼 {{ contentType }}
+      <div class="search-window p-3 d-flex">
+        <search-condition
+          :contentType="contentType"
+          @changeState="setDongType"></search-condition>
+        <div class="search-btn-area">
+          <b-button class="w-100 h-100 search-btn" @click="search"
+            >검색
           </b-button>
-        </div>
-        <div class="tag-bar py-1 d-flex">
-          <div class="tag text-center">검색태그</div>
-          <div class="tag text-center">검색태그</div>
         </div>
       </div>
       <div>
         <div class="search-items py-2 px-3" style="overflow: auto">
           <item-content
-            v-for="(data, index) in locationList"
+            v-for="(data, index) in detailLocations"
             :key="index"
             :item="data"
             :type="searchType"
             :contentType="contentType"
+            :jeonwol="jeonwol"
             ref="itemContent"
             @detailIdx="detail"
             @categoryIdx="manageMarkers" />
@@ -41,14 +40,17 @@
 <script>
 import ItemContent from "@/components/house/ItemContent";
 import { mapActions, mapGetters } from "vuex";
+import SearchCondition from "@/components/house/import/SearchCondition";
+import markerFood from "@/assets/img/marker_food.png";
+import markerCafe from "@/assets/img/marker_cafe.png";
+import markerHospital from "@/assets/img/marker_medic.png";
+import markerBank from "@/assets/img/marker_bank.png";
 
 export default {
   data() {
     return {
       map: null,
-      tag: {
-        type: "",
-      },
+      dongCode: "",
       markers: [],
       markersFood: [],
       markersBank: [],
@@ -58,9 +60,12 @@ export default {
       positions: [],
       searchType: 1,
       nearTarget: "",
+      jeonwol: null,
+      detailLocations: [],
     };
   },
   components: {
+    SearchCondition,
     ItemContent,
   },
   props: {
@@ -81,34 +86,60 @@ export default {
 
     search() {
       this.clear();
+      this.detailLocations = [];
 
       // 마커 지우기
       this.clearMarkers();
       this.clearContentMarkers();
 
-      this.getLocations({
-        gubn: this.contentType,
-        type: this.searchType,
-        dongCode: "1111011500",
-      });
+      if (this.dongCode !== null && this.searchType !== null) {
+        // 매매일 때는 전월을 null로 처리.
+        if (this.searchType === 1) {
+          this.jeonwol = null;
+        }
+        this.getLocations({
+          gubn: this.contentType,
+          type: this.searchType,
+          jeonwol: this.jeonwol,
+          dongCode: this.dongCode,
+        });
+      }
     },
 
+    setDongType(dongCode, type, jeonwol) {
+      this.dongCode = dongCode;
+      this.searchType = type;
+      this.jeonwol = jeonwol;
+      console.log(dongCode, type, jeonwol);
+    },
+
+    // locations은 DB에서 가져온 결과
     setKakaoMarkers(locations) {
       // 1. 카카오 키워드 검색을 위한 객체 생성.
       const geocoder = new kakao.maps.services.Geocoder();
 
       // 2. 장소들을 하나씩 addressSearch 시작.
       let bounds = new kakao.maps.LatLngBounds();
-
+      let idx = 0;
       for (let location of locations) {
+        // 카카오 주소로 좌표 검색 API
         geocoder.addressSearch(location.fullAddress, (data, status) => {
           if (status == kakao.maps.services.Status.OK) {
             const position = new kakao.maps.LatLng(data[0].y, data[0].x);
+            this.positions.push(position);
+
+            location.position = position;
+            location.idx = idx;
+
+            console.log("kakaoMap", location.idx);
+
+            this.detailLocations.push(location);
 
             this.displayMarker(position, location.aptName);
             bounds.extend(position);
 
             this.map.setBounds(bounds);
+            idx++;
           }
         });
       }
@@ -134,10 +165,10 @@ export default {
 
       this.markers.push(marker);
       this.infoWindows.push(infoWindow);
-      this.positions.push(position);
     },
     detail(idx, expanded) {
-      this.map.setCenter(this.positions[idx]);
+      this.map.setCenter(this.detailLocations[idx].position);
+      console.log(this.detailLocations[idx].position);
       this.clearContentMarkers();
       if (!expanded) {
         // 클릭시 주소를 가져온다.
@@ -177,14 +208,15 @@ export default {
       ];
 
       const keyword = ["맛집", "카페", "병원", "은행"];
-
-      const img = new kakao.maps.MarkerImage(
-        require("@/assets/img/marker_location.png"),
-        new kakao.maps.Size(37, 40),
-      );
+      const imgList = [markerFood, markerCafe, markerHospital, markerBank];
+      const imgSrc = imgList[contentIdx];
 
       const now = contentList[contentIdx];
       for (let content of contents) {
+        const img = new kakao.maps.MarkerImage(
+          imgSrc,
+          new kakao.maps.Size(45, 45),
+        );
         const marker = new kakao.maps.Marker({
           position: new kakao.maps.LatLng(content.y, content.x),
           image: img,
@@ -237,8 +269,8 @@ export default {
           bounds.extend(new kakao.maps.LatLng(pos.y, pos.x));
         });
       });
-      console.log(bounds.toString());
-      this.map.setBounds(bounds);
+      // console.log(bounds.toString());
+      // this.map.setBounds(bounds);
     },
 
     hideMarkerGroup(...contentIdx) {
@@ -308,6 +340,7 @@ export default {
   },
   name: "KakaoMap.vue",
   mounted() {
+    this.clear();
     if (!window.kakao || !window.kakao.maps) {
       const script = document.createElement("script");
       script.src =
@@ -350,27 +383,18 @@ export default {
 
 .search-window {
   width: 100%;
-  height: 9vh;
-  /*background-color: var(--pink);*/
+  height: 11vh;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.search-bar {
-  height: 53%;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+.search-btn-area {
+  width: 20%;
+  height: auto;
 }
 
-.tag-bar {
-  height: 47%;
-  background-color: var(--pink);
-}
-
-.tag {
-  width: 100px;
-  height: 100%;
-  border-radius: 50px;
-  margin-right: 5px;
-  background-color: var(--deep-skyblue);
+.search-btn {
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .map-in {

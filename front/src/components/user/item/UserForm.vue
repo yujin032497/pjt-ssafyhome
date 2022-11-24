@@ -37,6 +37,7 @@
           type="text"
           id="username"
           placeholder="이름..."
+          :disabled="type === 'modify'"
           v-model="input.name" />
       </div>
     </div>
@@ -97,6 +98,7 @@ export default {
   },
   props: {
     type: { type: String },
+    mode: { type: String, default: "" },
   },
   methods: {
     ...mapActions({
@@ -138,14 +140,19 @@ export default {
           this.updateAccount({
             account: this.input,
             cb: () => {
-              this.logout({
-                callback: () => {
-                  alert(
-                    "회원정보가 수정되어 로그아웃되었습니다. 다시 로그인 해주세요.",
-                  );
-                  this.$router.push({ name: "home" });
-                },
-              });
+              if (this.mode !== "adm") {
+                this.logout({
+                  callback: () => {
+                    alert(
+                      "회원정보가 수정되어 로그아웃되었습니다. 다시 로그인 해주세요.",
+                    );
+                    this.$router.push({ name: "home" });
+                  },
+                });
+              } else {
+                alert("수정되었습니다.");
+                this.$router.push({ name: "UserList" });
+              }
             },
           });
         }
@@ -163,6 +170,8 @@ export default {
       };
       this.selectAccount(payload);
     }
+
+    console.log(this.mode);
   },
   computed: {
     ...mapGetters({ account: "account" }),

@@ -34,6 +34,9 @@
           <p class="text-danger text-alert" v-show="!isPwPos">
             비밀번호를 6자 이상 입력하세요
           </p>
+          <div class="text-right">
+            <p><a @click="moveFind">아이디/비밀번호 찾기</a></p>
+          </div>
 
           <div class="float-right">
             <button class="login_btn btn p-sm-1 mr-1" @click="moveRegist">
@@ -47,6 +50,7 @@
               로그인
             </button>
           </div>
+          <br />
         </b-card-body>
       </b-card>
     </div>
@@ -85,6 +89,9 @@ export default {
     moveRegist() {
       this.$router.push({ path: "/user/regist" });
     },
+    moveFind() {
+      this.$router.push({ path: "/user/find" });
+    },
   },
   computed: {
     ...mapGetters({ loginUser: "loginUser" }),
@@ -100,7 +107,7 @@ export default {
 
 <style scoped>
 section {
-  height: 64vh !important;
+  height: 66vh !important;
   align-content: center;
 }
 
@@ -132,5 +139,9 @@ input {
 
 .text-alert {
   font-size: 0.8rem;
+}
+
+a:hover {
+  cursor: pointer;
 }
 </style>

@@ -24,15 +24,15 @@
             size="sm"
             @click="moveModifyArticle"
             class="mr-2"
-            >글수정</b-button
-          >
+            >글수정
+          </b-button>
           <b-button
             v-if="loginUser.isAdmin === 1"
             variant="outline-danger"
             size="sm"
             @click="deleteArticle"
-            >글삭제</b-button
-          >
+            >글삭제
+          </b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -57,7 +57,6 @@ export default {
   },
   created() {
     const articleNo = this.$route.params;
-    console.log(articleNo);
     this.getBoard(articleNo);
   },
   methods: {

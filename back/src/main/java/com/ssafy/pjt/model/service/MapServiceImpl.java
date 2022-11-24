@@ -1,5 +1,6 @@
 package com.ssafy.pjt.model.service;
 
+import com.ssafy.pjt.model.dto.AddressCode;
 import com.ssafy.pjt.model.dto.MapItem;
 import com.ssafy.pjt.model.mapper.MapDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,20 @@ public class MapServiceImpl implements MapService {
             }
         }
         return mapItems;
+    }
+
+    @Override
+    public List<AddressCode> getSido() {
+        return mapDao.getSido();
+    }
+
+    @Override
+    public List<AddressCode> getGugun(Map<String, String> map) {
+        return mapDao.getGugunInSido(map);
+    }
+
+    @Override
+    public List<AddressCode> getDong(Map<String, String> map) {
+        return mapDao.getDongInGugun(map);
     }
 }

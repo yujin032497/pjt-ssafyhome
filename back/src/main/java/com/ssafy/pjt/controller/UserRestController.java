@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -62,7 +63,7 @@ public class UserRestController {
     }
 
     @PutMapping("/modify")
-    public ResponseEntity<?> modify(@RequestBody User user, HttpSession session) {
+    public ResponseEntity<?> modify(@RequestBody User user) {
         try {
             if (user != null) {
                 userService.modify(user);
@@ -139,15 +140,61 @@ public class UserRestController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getUserList() {
+    public ResponseEntity<?> getUserList(@RequestParam Map<String, String> map) {
         try {
-            List<User> userList = userService.getList();
+            logger.debug(map.toString());
+            List<User> userList = userService.getList(map);
             if (userList != null && userList.size() > 0) {
                 return new ResponseEntity<>(userList, HttpStatus.OK);
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }
         } catch (Exception e) {
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/find/id")
+    public ResponseEntity<?> getUserId(@RequestBody Map<String, String> map){
+        try{
+            logger.debug(map.toString());
+            String id = userService.getUserId(map);
+            if(id != null){
+                return new ResponseEntity<>(id, HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/find/pw")
+    public ResponseEntity<?> getUserId2(@RequestBody Map<String, String> map){
+        try{
+            logger.debug(map.toString());
+            String id = userService.getUserId2(map);
+            if(id != null){
+                return new ResponseEntity<>(id, HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        } catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/updatePw")
+    public ResponseEntity<?> updatePw(@RequestBody Map<String, String> map){
+        try{
+            logger.debug(map.toString());
+            int cnt = userService.updatePassword(map);
+            if(cnt != 0){
+                return new ResponseEntity<Void>(HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        } catch (Exception e){
+            e.printStackTrace();
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

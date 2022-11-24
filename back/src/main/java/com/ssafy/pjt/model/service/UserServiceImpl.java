@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -42,8 +43,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getList() throws Exception {
-        return dao.selectUserList();
+    public List<User> getList(Map<String, String> map) throws Exception {
+        if(map.get("key").equals("undefined")){
+            map.put("key", null);
+        }
+        return dao.selectUserList(map);
+    }
+
+    @Override
+    public String getUserId(Map<String, String> map) {
+        return dao.selectUserId(map);
+    }
+    @Override
+    public String getUserId2(Map<String, String> map) {
+        return dao.selectUserId2(map);
+    }
+
+    @Override
+    public int updatePassword(Map<String, String> map) {
+        return dao.updatePassword(map);
     }
 
 }

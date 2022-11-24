@@ -8,7 +8,7 @@
           v-b-tooltip.hover
           title="클릭하시면 주변정보와 거래내역을 조회할 수 있습니다.">
           <p class="content">{{ item.aptName }}</p>
-          <p class="sub-content">
+          <p class="sub-content" v-if="type === 1">
             평균 {{ item.dealAmount | filterPrice }}만원
           </p>
           <p class="sub-content">{{ item.fullAddress }}</p>
@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div class="d-flex flex-row category-bar">
+      <div class="d-flex flex-row category-bar" v-if="expanded">
         <b-button
           class="flex-fill text-center align-self-center btn-category"
           @click="onCategory(0)">
@@ -83,18 +83,21 @@ export default {
     },
     type: { type: Number },
     contentType: { type: String },
+    jeonwol: { type: Number },
   },
   methods: {
     onEmit() {
+      console.log("Content", this.item.idx);
       this.$emit("detailIdx", this.item.idx, this.expanded);
 
       if (!this.expanded) {
         this.check = false;
         this.expanded = !this.expanded;
+        let url =
+          `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}` +
+          (this.type === 0 ? `&jeonwol=${this.jeonwol}` : ``);
         http
-          .get(
-            `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}`,
-          )
+          .get(url)
           .then((response) => {
             switch (response.status) {
               case 200:
@@ -116,9 +119,7 @@ export default {
       this.$emit("categoryIdx", this.item.idx, cIdx);
     },
   },
-  mounted() {
-    console.log("이거", this.item);
-  },
+  mounted() {},
   filters: {
     filterPrice: (value) => {
       if (!value) return value;

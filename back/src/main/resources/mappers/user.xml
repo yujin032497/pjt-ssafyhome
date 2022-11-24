@@ -41,9 +41,44 @@
         FROM USER
     </select>
 
-    <select id="selectUserList" resultType="user">
+    <sql id="search">
+        <if test="key != null">
+            <if test="key == 'id'">
+                AND id = #{value}
+            </if>
+            <if test="key == 'name'">
+                AND name LIKE #{value}
+            </if>
+            <if test="key == 'address'">
+                AND address CONCAT('%', #{value}, '%')
+            </if>
+            <if test="key == 'phone'">
+                AND phone CONCAT('%', #{value}, '%')
+            </if>
+        </if>
+    </sql>
+
+    <select id="selectUserList" parameterType="map" resultType="user">
         SELECT id, password, name, address, phone, is_admin
         FROM USER
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <include refid="search"></include>
+        </trim>
+    </select>
+
+    <select id="selectUserId" parameterType="map" resultType="string">
+        SELECT id
+        FROM USER
+        WHERE name = #{name}
+          AND phone = #{phone}
+          AND is_admin = 0
+    </select>
+    <select id="selectUserId2" parameterType="map" resultType="string">
+        SELECT id
+        FROM USER
+        WHERE name = #{name}
+          AND id = #{id}
+          AND is_admin = 0
     </select>
 
     <!-- Update -->
@@ -61,6 +96,13 @@
             </if>
         </trim>
         WHERE ID = #{id}
+    </update>
+
+    <update id="updatePassword" parameterType="map">
+        UPDATE USER
+           SET password = #{password}
+         WHERE id = #{id}
+           AND is_admin = 0
     </update>
 
     <!-- Delete -->

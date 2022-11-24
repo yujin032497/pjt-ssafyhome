@@ -87,6 +87,7 @@ export default {
   },
   methods: {
     onEmit() {
+      console.log("Content", this.item.idx);
       this.$emit("detailIdx", this.item.idx, this.expanded);
 
       if (!this.expanded) {
@@ -95,7 +96,6 @@ export default {
         let url =
           `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}` +
           (this.type === 0 ? `&jeonwol=${this.jeonwol}` : ``);
-        console.log(url);
         http
           .get(url)
           .then((response) => {
@@ -119,9 +119,7 @@ export default {
       this.$emit("categoryIdx", this.item.idx, cIdx);
     },
   },
-  mounted() {
-    console.log("이거", this.item);
-  },
+  mounted() {},
   filters: {
     filterPrice: (value) => {
       if (!value) return value;

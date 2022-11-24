@@ -18,7 +18,7 @@
       <div>
         <div class="search-items py-2 px-3" style="overflow: auto">
           <item-content
-            v-for="(data, index) in locationList"
+            v-for="(data, index) in detailLocations"
             :key="index"
             :item="data"
             :type="searchType"
@@ -61,6 +61,7 @@ export default {
       searchType: 1,
       nearTarget: "",
       jeonwol: null,
+      detailLocations: [],
     };
   },
   components: {
@@ -85,6 +86,7 @@ export default {
 
     search() {
       this.clear();
+      this.detailLocations = [];
 
       // 마커 지우기
       this.clearMarkers();
@@ -111,22 +113,33 @@ export default {
       console.log(dongCode, type, jeonwol);
     },
 
+    // locations은 DB에서 가져온 결과
     setKakaoMarkers(locations) {
       // 1. 카카오 키워드 검색을 위한 객체 생성.
       const geocoder = new kakao.maps.services.Geocoder();
 
       // 2. 장소들을 하나씩 addressSearch 시작.
       let bounds = new kakao.maps.LatLngBounds();
-
+      let idx = 0;
       for (let location of locations) {
+        // 카카오 주소로 좌표 검색 API
         geocoder.addressSearch(location.fullAddress, (data, status) => {
           if (status == kakao.maps.services.Status.OK) {
             const position = new kakao.maps.LatLng(data[0].y, data[0].x);
             this.positions.push(position);
+
+            location.position = position;
+            location.idx = idx;
+
+            console.log("kakaoMap", location.idx);
+
+            this.detailLocations.push(location);
+
             this.displayMarker(position, location.aptName);
             bounds.extend(position);
 
             this.map.setBounds(bounds);
+            idx++;
           }
         });
       }
@@ -154,7 +167,8 @@ export default {
       this.infoWindows.push(infoWindow);
     },
     detail(idx, expanded) {
-      this.map.setCenter(this.positions[idx]);
+      this.map.setCenter(this.detailLocations[idx].position);
+      console.log(this.detailLocations[idx].position);
       this.clearContentMarkers();
       if (!expanded) {
         // 클릭시 주소를 가져온다.
@@ -255,8 +269,8 @@ export default {
           bounds.extend(new kakao.maps.LatLng(pos.y, pos.x));
         });
       });
-      console.log(bounds.toString());
-      this.map.setBounds(bounds);
+      // console.log(bounds.toString());
+      // this.map.setBounds(bounds);
     },
 
     hideMarkerGroup(...contentIdx) {

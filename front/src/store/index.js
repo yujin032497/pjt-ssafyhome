@@ -60,7 +60,7 @@ export default new Vuex.Store({
         account.idx = idx;
         idx++;
       });
-      console.log(payload);
+
       state.accounts = payload.accounts;
     },
 
@@ -124,7 +124,6 @@ export default new Vuex.Store({
           console.log(response.status);
           switch (response.status) {
             case 200:
-              console.log(response.data);
               sessionStorage.setItem(
                 "loginUser",
                 JSON.stringify(response.data),

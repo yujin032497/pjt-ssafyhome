@@ -80,8 +80,6 @@ export default {
       let isValid = true;
       let errMsg = "";
 
-      console.log(this.input);
-
       !this.input.subject
         ? ((isValid = false),
           (errMsg = "제목을 입력해주세요."),

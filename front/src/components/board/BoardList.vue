@@ -94,16 +94,21 @@ export default {
     },
     search() {
       if (this.selected !== null && this.searchVal !== "") {
+        console.log("true");
         const payload = {
           key: this.selected,
           value: this.searchVal,
           pgno: this.pgno,
           spp: this.spp,
         };
+        this.getTotal(payload);
         this.getBoards(payload);
       } else {
-        this.getBoards({});
+        console.log("false");
+        this.getTotal({ pgno: 1, spp: 10 });
+        this.getBoards({ pgno: 1, spp: 10 });
       }
+      console.log("합계", this.total);
     },
 
     pageChange(bvEvent, page) {
@@ -116,8 +121,7 @@ export default {
   },
 
   created() {
-    console.log("뷰단");
-    this.getTotal({});
+    this.getTotal({ pgno: 1, spp: 10 });
     const payload = {
       pgno: this.pgno,
       spp: this.spp,

@@ -24,12 +24,11 @@ public class UserRestController {
     private static final Logger logger = LoggerFactory.getLogger(UserRestController.class);
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user, HttpSession session) {
+    public ResponseEntity<?> login(@RequestBody User user) {
         try {
             User loginUser = userService.login(user);
             if (loginUser != null) {
-                session.setAttribute("loginUser", loginUser);
-                logger.debug("{}", ((User) session.getAttribute("loginUser")).toString());
+                //session.setAttribute("loginUser", loginUser);
                 return new ResponseEntity<>(loginUser, HttpStatus.OK);
             } else {
                 return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);

@@ -17,6 +17,7 @@ export default new Vuex.Store({
     qnas: [],
     qna: {},
     locations: [],
+    total: 0,
     sidos: [{ value: null, text: "시/도 선택" }],
     guguns: [{ value: null, text: "구/군 선택" }],
     dongs: [{ value: null, text: "동 선택" }],
@@ -45,6 +46,9 @@ export default new Vuex.Store({
     },
     locations(state) {
       return state.locations;
+    },
+    total(state) {
+      return state.total;
     },
   },
   mutations: {
@@ -79,6 +83,7 @@ export default new Vuex.Store({
       state.qnas = payload.qnas;
     },
     QNA(state, payload) {
+      console.log(payload.qna);
       state.qna = payload.qna;
     },
     SET_LOCATIONS(state, payload) {
@@ -90,6 +95,9 @@ export default new Vuex.Store({
         });
       }
       state.locations = payload.locations;
+    },
+    TOTAL(state, payload) {
+      state.total = payload.total;
     },
     CLEAR_SIDO_LIST(state) {
       state.sidos = [{ value: null, text: "시/도 선택" }];
@@ -217,7 +225,6 @@ export default new Vuex.Store({
 
     deleteAccount(context, payload) {
       http.delete(`/user/delete/${payload.id}`).then((response) => {
-        console.log(response);
         switch (response.status) {
           case 200:
             alert("삭제되었습니다!");
@@ -231,17 +238,52 @@ export default new Vuex.Store({
       });
     },
 
-    getBoards(context, payload) {
-      console.log(payload);
+    getTotal(context, payload) {
+      console.log("생성" + payload);
       http
         .get(
-          `/board/list?key=${payload.key ? payload.key : null}&value=${
+          `/board/total?key=${payload.key ? payload.key : ""}&value=${
             payload.value ? payload.value : ""
-          }&pgno=${payload.pgno}&spp=${payload.spp}`,
-          payload,
+          }&pgno=${payload.pgno ? payload.pgno : ""}&spp=${
+            payload.spp ? payload.spp : ""
+          }`,
         )
         .then((response) => {
-          console.log(response.data);
+          switch (response.status) {
+            case 200:
+              console.log(response.data);
+              context.commit({ type: "TOTAL", total: response.data }); // payload
+              break;
+            case 204:
+              context.commit({ type: "TOTAL", total: 0 }); // payload
+              break;
+            case 400:
+              alert("잘못된 요청입니다.");
+              break;
+            case 500:
+              alert("서버 오류!!!");
+              break;
+          }
+        });
+    },
+
+    getBoards(context, payload) {
+      console.log(
+        `/board/list?key=${payload.key ? payload.key : ""}&value=${
+          payload.value ? payload.value : ""
+        }&pgno=${payload.pgno ? payload.pgno : ""}&spp=${
+          payload.spp ? payload.spp : ""
+        }`,
+      );
+      http
+        .get(
+          `/board/list?key=${payload.key ? payload.key : ""}&value=${
+            payload.value ? payload.value : ""
+          }&pgno=${payload.pgno ? payload.pgno : ""}&spp=${
+            payload.spp ? payload.spp : ""
+          }`,
+        )
+        .then((response) => {
           switch (response.status) {
             case 200:
               console.log(response.data);
@@ -261,7 +303,6 @@ export default new Vuex.Store({
     },
 
     getBoard(context, payload) {
-      console.log(payload);
       http.get(`/board/view/${payload.articleNo}`).then((response) => {
         console.log(response.data);
         switch (response.status) {
@@ -280,7 +321,6 @@ export default new Vuex.Store({
     },
 
     createBoard(context, payload) {
-      console.log(payload.board);
       http.post("/board/write", payload.board).then((response) => {
         switch (response.status) {
           case 200:
@@ -339,27 +379,114 @@ export default new Vuex.Store({
     },
 
     getQnas(context, payload) {
-      console.log(payload);
+      console.log(payload.userId);
+      http.get(`/qna/list?userId=${payload.userId}`).then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            console.log(response.data);
+            context.commit({ type: "QNAS", qnas: response.data }); // payload
+            break;
+          case 204:
+            context.commit({ type: "QNAS", qnas: {} }); // payload
+            break;
+          case 400:
+            alert("잘못된 요청입니다.");
+            break;
+          case 500:
+            alert("서버 오류!!!");
+            break;
+        }
+      });
+    },
+
+    getAllQnas(context) {
+      http.get(`/qna/listAll`).then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            console.log(response.data);
+            context.commit({ type: "QNAS", qnas: response.data }); // payload
+            break;
+          case 204:
+            context.commit({ type: "QNAS", qnas: {} }); // payload
+            break;
+          case 400:
+            alert("잘못된 요청입니다.");
+            break;
+          case 500:
+            alert("서버 오류!!!");
+            break;
+        }
+      });
+    },
+
+    getQna(context, payload) {
+      http.get(`/qna/view/${payload.qnaNo}`).then((response) => {
+        console.log(response.data);
+        switch (response.status) {
+          case 200:
+            context.commit({ type: "QNA", qna: response.data }); // payload
+            break;
+
+          case 400:
+            alert("잘못된 요청입니다.");
+            break;
+          case 500:
+            alert("서버 오류!!!");
+            break;
+        }
+      });
+    },
+
+    createQna(context, payload) {
+      console.log(payload.qna);
+      http.post("/qna/write", payload.qna).then((response) => {
+        switch (response.status) {
+          case 200:
+            alert("등록 되었습니다.");
+            payload.callback();
+            break;
+          case 400:
+            alert("잘못된 요청입니다.");
+            break;
+          case 500:
+            alert("서버 오류!!!");
+            break;
+        }
+      });
+    },
+
+    deleteQna(context, payload) {
+      http.delete(`/qna/${payload.qnaNo.qnaNo}`).then((response) => {
+        switch (response.status) {
+          case 200:
+            alert("삭제되었습니다!");
+            payload.callback();
+            break;
+          case 500:
+            alert("내부 서버 오류");
+            break;
+        }
+      });
+    },
+
+    updateAnswerQna(context, payload) {
+      console.log("요잇네! 답변!");
+      console.log(payload.qna);
       http
-        .get(
-          `/qna/list?key=${payload.key ? payload.key : null}&value=${
-            payload.value ? payload.value : ""
-          }&pgno=${payload.pgno}&spp=${payload.spp}`,
-          payload,
-        )
+        .put(`/qna/updateAnswer/${payload.qna.qnaNo}`, payload.qna)
         .then((response) => {
-          console.log(response.data);
           switch (response.status) {
             case 200:
-              console.log(response.data);
-              context.commit({ type: "QNAS", qnas: response.data }); // payload
+              alert("답변완료!!");
+              payload.callback();
               break;
-            case 204:
-              context.commit({ type: "QNAS", qnas: {} }); // payload
-              break;
+
             case 400:
               alert("잘못된 요청입니다.");
               break;
+
             case 500:
               alert("서버 오류!!!");
               break;

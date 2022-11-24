@@ -13,7 +13,7 @@ public interface BoardService {
 	
 	public List<Board> getListArticle(Map<String, String> map) throws Exception;
 	
-	public int getTotalArticle() throws Exception;
+	public int getTotalArticle(Map<String, String> map) throws Exception;
 	
 	public Board getArticle(int articleNo) throws Exception;
 	

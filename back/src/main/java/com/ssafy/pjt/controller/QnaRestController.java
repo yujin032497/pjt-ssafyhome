@@ -21,27 +21,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.pjt.model.dto.Board;
+import com.ssafy.pjt.model.dto.Qna;
 import com.ssafy.pjt.model.dto.User;
-import com.ssafy.pjt.model.service.BoardService;
+import com.ssafy.pjt.model.service.QnaService;
 
 @RestController
-@RequestMapping("/api/board")
+@RequestMapping("/api/qna")
 @CrossOrigin("*")
-public class BoardRestController {
+public class QnaRestController {
 
-	private static final Logger logger = LoggerFactory.getLogger(BoardRestController.class);
+	private static final Logger logger = LoggerFactory.getLogger(QnaRestController.class);
 
 	@Autowired
-	BoardService boardService;
+	QnaService QnaService;
 
 	@GetMapping("/list")
 	public ResponseEntity<?> list(@RequestParam Map<String, String> map) throws Exception {
 		logger.debug("list parameter : {}", map);
 		try {
-			List<Board> listArticle = boardService.getListArticle(map);
-			if(listArticle!=null && listArticle.size()>0) {
-				return new ResponseEntity<List<Board>>(listArticle, HttpStatus.OK);
+			List<Qna> listQna = QnaService.getListQna(map);
+			if(listQna!=null && listQna.size()>0) {
+				return new ResponseEntity<List<Qna>>(listQna, HttpStatus.OK);
+			}else {
+				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+	}
+	
+	@GetMapping("/listAll")
+	public ResponseEntity<?> list() throws Exception {
+		//logger.debug("list parameter : {}", map);
+		try {
+			List<Qna> listQna = QnaService.getListAllQna();
+			if(listQna!=null && listQna.size()>0) {
+				return new ResponseEntity<List<Qna>>(listQna, HttpStatus.OK);
 			}else {
 				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 			}
@@ -56,9 +73,7 @@ public class BoardRestController {
 	public ResponseEntity<?> total(@RequestParam Map<String, String> map) throws Exception {
 		logger.debug("total parameter : {}", map);
 		try {
-			int total = boardService.getTotalArticle(map);
-			
-			logger.debug(String.valueOf(total));
+			int total = QnaService.getTotalQna();
 			if(total>0) {
 				return new ResponseEntity<Integer>(total, HttpStatus.OK);
 			}else {
@@ -72,16 +87,16 @@ public class BoardRestController {
 	}
 
 	@PostMapping("/write")
-	public ResponseEntity<?> write(@RequestBody Board board, HttpSession session) throws Exception {
+	public ResponseEntity<?> write(@RequestBody Qna Qna, HttpSession session) throws Exception {
 		try {
-			logger.debug("write board : {}", board);
+			logger.debug("write Qna : {}", Qna);
 			// fixture
-			//User user = new User("ssafy1", "1234", "김싸피", "서울시 강남구 역삼동", "010-1111-2222", 0);
+			
 			User user = new User();
-			user.setId(board.getUserId());
-			board.setUserId(user.getId());
-
-			boardService.writeArticle(board);
+			user.setId(Qna.getUserId());
+			Qna.setUserId(user.getId());
+			logger.debug("write Qna : {}", Qna);
+			QnaService.writeQna(Qna);
 
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (Exception e) {
@@ -91,15 +106,14 @@ public class BoardRestController {
 	}
 
 
-	@GetMapping("/view/{boardId}")
-	public ResponseEntity<?>detail(@PathVariable("boardId") String boardId) {
-		logger.debug("view parameter : {}", boardId);
+	@GetMapping("/view/{QnaId}")
+	public ResponseEntity<?>detail(@PathVariable("QnaId") String QnaId) {
+		logger.debug("view parameter : {}", QnaId);
 		try {
-			boardService.updateHit(Integer.parseInt(boardId));
-			Board board = boardService.getArticle(Integer.parseInt(boardId));
-			logger.debug(board.toString());
-			if(board!=null) {
-				return new ResponseEntity<Board>(board, HttpStatus.OK);
+			Qna Qna = QnaService.getQna(Integer.parseInt(QnaId));
+			logger.debug(Qna.toString());
+			if(Qna!=null) {
+				return new ResponseEntity<Qna>(Qna, HttpStatus.OK);
 			} else {
 				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 			}
@@ -109,11 +123,11 @@ public class BoardRestController {
 		}
 	}
 
-	@DeleteMapping("/{articleNo}")
-	public ResponseEntity<?> delete(@PathVariable("articleNo") String articleNo) throws Exception {
+	@DeleteMapping("/{QnaNo}")
+	public ResponseEntity<?> delete(@PathVariable("QnaNo") String QnaNo) throws Exception {
 		try {
-			//logger.debug("delete articleNo : {}", articleNo);
-			boardService.deleteArticle(Integer.parseInt(articleNo));
+			logger.debug("delete QnaNo : {}", QnaNo);
+			QnaService.deleteQna(Integer.parseInt(QnaNo));
 
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		}
@@ -122,11 +136,11 @@ public class BoardRestController {
 		}
 	}
 
-	@PutMapping("/modify/{articleNo}")
-	public ResponseEntity<?> modify(@RequestBody Board article) throws Exception {
+	@PutMapping("/updateAnswer/{QnaNo}")
+	public ResponseEntity<?> modify(@RequestBody Qna Qna) throws Exception {
 		try {
-			logger.debug("modify board : {}", article);
-			boardService.updateArticle(article);
+			logger.debug("modify Qna : {}", Qna);
+			QnaService.updateQna(Qna);
 
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		}

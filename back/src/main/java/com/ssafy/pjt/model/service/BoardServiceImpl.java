@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.pjt.model.dto.Board;
 import com.ssafy.pjt.model.mapper.BoardDao;
-import com.ssafy.pjt.util.SizeConstant;
 
 @Service
 public class BoardServiceImpl implements BoardService{
@@ -46,8 +45,20 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public int getTotalArticle() throws Exception {
-		return boardDao.getTotalArticle();
+	public int getTotalArticle(Map<String, String> map) throws Exception {
+		Map<String, Object> param = new HashMap<String, Object>();
+		String key = map.get("key");
+		if ("userid".equals(key))
+			key = "b.user_id";
+		int spp = Integer.parseInt(map.get("spp"));
+		int pgno = (Integer.parseInt(map.get("pgno"))-1)*spp;
+		param.put("key", key == null ? "" : key);
+		param.put("word", map.get("value") == null ? "" : map.get("value"));
+		param.put("pgno", pgno);
+		param.put("spp", spp);
+		
+		System.out.println(param.toString());
+		return boardDao.getTotalArticle(param);
 	}
 
 	@Override

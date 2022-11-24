@@ -12,7 +12,7 @@ public interface BoardDao {
 	
 	public List<Board> getListArticle(Map<String, Object> map);
 	
-	public int getTotalArticle();
+	public int getTotalArticle(Map<String, Object> map);
 	
 	public Board getArticle(int articleNo);
 	

@@ -76,8 +76,8 @@ public class BoardRestController {
 		try {
 			logger.debug("write board : {}", board);
 			// fixture
-			User user = new User("ssafy1", "1234", "김싸피", "서울시 강남구 역삼동", "010-1111-2222", 0);
-//			User user = (User) session.getAttribute("loginUser");
+			//User user = new User("ssafy1", "1234", "김싸피", "서울시 강남구 역삼동", "010-1111-2222", 0);
+			User user = new User();
 			user.setId(board.getUserId());
 			board.setUserId(user.getId());
 

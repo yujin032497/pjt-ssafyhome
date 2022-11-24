@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.pjt.model.dto.Board;
 import com.ssafy.pjt.model.mapper.BoardDao;
-import com.ssafy.pjt.util.SizeConstant;
 
 @Service
 public class BoardServiceImpl implements BoardService{

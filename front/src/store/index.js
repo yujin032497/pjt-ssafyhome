@@ -98,7 +98,7 @@ export default new Vuex.Store({
       state.guguns = [{ value: null, text: "구/군 선택" }];
     },
     CLEAR_DONG_LIST(state) {
-      state.guguns = [{ value: null, text: "동 선택" }];
+      state.dongs = [{ value: null, text: "동 선택" }];
     },
     SET_SIDO_LIST(state, sidos) {
       sidos.forEach((sido) => {
@@ -185,24 +185,18 @@ export default new Vuex.Store({
       });
     },
 
-    selectAccountList(context, payload) {
-      console.log(payload);
-      http
-        .get(`/user/list?key=${payload.key}&value=${payload.value}`)
-        .then((response) => {
-          console.log(response);
-          switch (response.status) {
-            case 200:
-              context.commit({ type: "ACCOUNTS", accounts: response.data });
-              break;
-            case 204:
-              context.commit({ type: "ACCOUNTS", accounts: [] });
-              break;
-            case 500:
-              alert("내부 서버 에러");
-              break;
-          }
-        });
+    selectAccountList(context) {
+      http.get("/user/list").then((response) => {
+        console.log(response);
+        switch (response.status) {
+          case 200:
+            context.commit({ type: "ACCOUNTS", accounts: response.data });
+            break;
+          case 500:
+            alert("내부 서버 에러");
+            break;
+        }
+      });
     },
 
     updateAccount(context, payload) {
@@ -377,10 +371,11 @@ export default new Vuex.Store({
     getLocations(context, payload) {
       // 장소를 가져오는 API
       context.commit({ type: "CLEAR_LOCATIONS" });
+      console.log(payload.jeonwol);
 
       http
         .get(
-          `/map?gubn=${payload.gubn}&type=${payload.type}&dongCode=${payload.dongCode}`,
+          `/map?gubn=${payload.gubn}&type=${payload.type}&jeonwol=${payload.jeonwol}&dongCode=${payload.dongCode}`,
         )
         .then((response) => {
           switch (response.status) {
@@ -406,13 +401,14 @@ export default new Vuex.Store({
         .then(({ data }) => {
           context.commit("SET_SIDO_LIST", data);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.log(error);
         });
     },
-    getGugun(context, sido) {
+
+    getGugun(context, sidoCode) {
       http
-        .get(`/map/gugun?sido=${sido}`)
+        .get(`/map/gugun?sidoCode=${sidoCode}`)
         .then(({ data }) => {
           context.commit("SET_GUGUN_LIST", data);
         })
@@ -420,9 +416,10 @@ export default new Vuex.Store({
           console.log(err);
         });
     },
-    getDong(context, gugun) {
+
+    getDong(context, gugunCode) {
       http
-        .get(`/map/dong?gugun=${gugun}`)
+        .get(`/map/dong?gugunCode=${gugunCode}`)
         .then(({ data }) => {
           context.commit("SET_DONG_LIST", data);
         })

@@ -14,9 +14,9 @@ public interface MapService {
 
     List<AddressCode> getSido();
 
-    List<AddressCode> getGugunInSido(String sido);
+    List<AddressCode> getGugun(Map<String, String> map);
 
-    List<AddressCode> getDongInGugun(String gugun);
+    List<AddressCode> getDong(Map<String, String> map);
 
 
 }

@@ -1,34 +1,44 @@
 <template>
   <div class="d-block search-condition">
-    <div class="d-flex search-bar">
-      <b-form-select
-        class="mr-1"
-        v-model="sidoCode"
-        :options="sidos"
-        @change="gugunList"></b-form-select>
-      <b-form-select
-        class="mx-1"
-        v-model="gugunCode"
-        :options="guguns"
-        @change="dongList"></b-form-select>
-      <b-form-select
-        class="mx-1"
-        v-model="dongCode"
-        :options="dongs"
-        @change="changeDong"></b-form-select>
+    <div
+      class="search-bar p-auto d-flex align-content-center justify-content-center">
+      <div class="d-flex w-100">
+        <b-form-select
+          class="flex-fill mr-1"
+          v-model="sidoCode"
+          :options="sidos"
+          @change="gugunList"></b-form-select>
+        <b-form-select
+          class="flex-fill mx-1"
+          v-model="gugunCode"
+          :options="guguns"
+          @change="dongList"></b-form-select>
+        <b-form-select
+          class="flex-fill mx-1"
+          v-model="dongCode"
+          :options="dongs"
+          @change="changeState"></b-form-select>
+      </div>
     </div>
-    <div class="search-bar">
+    <div class="d-flex w-100">
       <b-form-select
-        class="mr-1"
-        v-model="searchType"
-        @change="changeType"
+        class="flex-fill mr-1"
+        v-model="type"
+        @change="changeGubn"
         :options="selectType"></b-form-select>
+      <b-form-select
+        v-if="showInput == true"
+        class="flex-fill mr-1"
+        v-model="jeonwol"
+        @change="changeState"
+        :options="selectJeonwol"></b-form-select>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from "vuex";
+
 export default {
   name: "SearchCondition",
   data() {
@@ -36,23 +46,27 @@ export default {
       sidoCode: null,
       gugunCode: null,
       dongCode: null,
-      searchType: null,
+      type: null,
       selectType: [
-        { value: null, text: "매매/전월세 구분" },
+        { value: null, text: "구분" },
         { value: 1, text: "매매" },
-        { value: 0, text: "전월세" },
+        { value: 0, text: "전/월세" },
+      ],
+      showInput: false,
+      jeonwol: 1, // 0이면 전세 1이면 월세
+      selectJeonwol: [
+        { value: 1, text: "월세" },
+        { value: 0, text: "전세" },
       ],
     };
   },
+  props: {
+    contentType: { type: String },
+  },
   computed: {
     ...mapState(["sidos", "guguns", "dongs"]),
-    // sidos() {
-    //   return this.$store.state.sidos;
-    // },
   },
   created() {
-    // this.$store.dispatch("getSido");
-    // this.sidoList();
     this.CLEAR_SIDO_LIST();
     this.CLEAR_GUGUN_LIST();
     this.CLEAR_DONG_LIST();
@@ -61,11 +75,7 @@ export default {
   methods: {
     ...mapActions(["getSido", "getGugun", "getDong"]),
     ...mapMutations(["CLEAR_SIDO_LIST", "CLEAR_GUGUN_LIST", "CLEAR_DONG_LIST"]),
-    // sidoList() {
-    //   this.getSido();
-    // },
     gugunList() {
-      // console.log(this.sidoCode);
       this.CLEAR_GUGUN_LIST();
       this.CLEAR_DONG_LIST();
       this.gugunCode = null;
@@ -73,16 +83,35 @@ export default {
       if (this.sidoCode) this.getGugun(this.sidoCode);
     },
     dongList() {
-      console.log(this.gugunCode);
       this.CLEAR_DONG_LIST();
       this.dongCode = null;
-      if (this.gugunCode) this.getDong(this.gugunCode);
+      if (this.sidoCode && this.gugunCode) {
+        this.getDong(this.gugunCode);
+      }
     },
-    changeDong() {
-      this.$emit("changeDong", this.dongCode);
+    changeState() {
+      this.$emit("changeState", this.dongCode, this.type, this.jeonwol);
     },
-    changeType() {
-      this.$emit("changeType", this.searchType);
+    changeGubn() {
+      // 타입이 전월세면
+      if (this.type === 0) {
+        this.showInput = true;
+      } else {
+        this.showInput = false;
+        this.jeonwol = 1;
+      }
+      this.$emit("changeState", this.dongCode, this.type, this.jeonwol);
+    },
+  },
+  watch: {
+    contentType() {
+      this.CLEAR_SIDO_LIST();
+      this.CLEAR_GUGUN_LIST();
+      this.CLEAR_DONG_LIST();
+      this.getSido();
+      this.sidoCode = null;
+      this.gugunCode = null;
+      this.dongCode = null;
     },
   },
 };
@@ -91,7 +120,7 @@ export default {
 <style scoped>
 .search-condition {
   width: 80%;
-  height: 100%;
+  height: auto;
 }
 
 .search-bar {

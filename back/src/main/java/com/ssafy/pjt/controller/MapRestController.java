@@ -25,6 +25,7 @@ public class MapRestController {
     @GetMapping
     public ResponseEntity<?> list(@RequestParam Map<String, String> map) {
         try {
+            logger.debug(map.toString());
             List<MapItem> mapList = mapService.getMapList(map);
 
             if (mapList != null && mapList.size() > 0) {
@@ -42,7 +43,7 @@ public class MapRestController {
 
     @GetMapping("/detail")
     public ResponseEntity<?> detail(@RequestParam Map<String, String> map) {
-        logger.debug("here");
+        logger.debug(map.toString());
         try {
             List<MapItem> detailList = mapService.getDetailList(map);
 
@@ -60,20 +61,54 @@ public class MapRestController {
     }
 
     @GetMapping("/sido")
-    public ResponseEntity<List<AddressCode>> sido() throws Exception {
-        logger.info("sido - 호출");
-        return new ResponseEntity<List<AddressCode>>(mapService.getSido(), HttpStatus.OK);
+    public ResponseEntity<?> sido() {
+        try {
+            logger.debug("sido called");
+            List<AddressCode> sidos = mapService.getSido();
+            if (sidos != null) {
+                return new ResponseEntity<>(sidos, HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/gugun")
-    public ResponseEntity<List<AddressCode>> sido(@RequestParam("sido") String sido) throws Exception {
-        return new ResponseEntity<List<AddressCode>>(mapService.getGugunInSido(sido), HttpStatus.OK);
+    public ResponseEntity<?> gugun(@RequestParam Map<String, String> map) {
+        try {
+            logger.debug("{}\tgugun called", map.toString());
+            List<AddressCode> guguns = mapService.getGugun(map);
+            if (guguns != null) {
+                return new ResponseEntity<>(guguns, HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
 
     @GetMapping("/dong")
-    public ResponseEntity<List<AddressCode>> dong(@RequestParam("gugun") String gugun) throws Exception {
-        return new ResponseEntity<List<AddressCode>>(mapService.getDongInGugun(gugun), HttpStatus.OK);
+    public ResponseEntity<?> dong(@RequestParam Map<String, String> map) {
+        try {
+            logger.debug("{}\tdong called", map.toString());
+            List<AddressCode> dongs = mapService.getDong(map);
+            if (dongs != null) {
+                return new ResponseEntity<>(dongs, HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    
+
+//    @GetMapping("/detail")
+//    public ResponseEntity<?> detail(@RequestParam Map<String, String> map) {
+//        try{
+//
+//        }
+//    }
 }

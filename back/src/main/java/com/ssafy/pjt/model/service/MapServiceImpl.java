@@ -65,12 +65,12 @@ public class MapServiceImpl implements MapService {
     }
 
     @Override
-    public List<AddressCode> getGugunInSido(String sido) {
-        return mapDao.getGugun(sido);
+    public List<AddressCode> getGugun(Map<String, String> map) {
+        return mapDao.getGugunInSido(map);
     }
 
     @Override
-    public List<AddressCode> getDongInGugun(String gugun) {
-        return mapDao.getDong(gugun);
+    public List<AddressCode> getDong(Map<String, String> map) {
+        return mapDao.getDongInGugun(map);
     }
 }

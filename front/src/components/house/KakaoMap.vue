@@ -6,21 +6,13 @@
 
     <div class="map-info">
       <div class="search-window p-3 d-flex">
-        <!--        <div
-          class="search-bar p-auto d-flex align-content-center justify-content-center">
-          <b-button @click="search"
-            >검색 테스트 버튼 {{ contentType }}
-          </b-button>
-        </div>
-        <div class="tag-bar py-1 d-flex">
-          <div class="tag text-center">검색태그</div>
-          <div class="tag text-center">검색태그</div>
-        </div>-->
         <search-condition
-          @changeDong="changeDong"
-          @changeType="changeType"></search-condition>
-        <div class="search-btn h-auto">
-          <b-button class="w-100" @click="search">검색</b-button>
+          :contentType="contentType"
+          @changeState="setDongType"></search-condition>
+        <div class="search-btn-area">
+          <b-button class="w-100 h-100 search-btn" @click="search"
+            >검색
+          </b-button>
         </div>
       </div>
       <div>
@@ -31,6 +23,7 @@
             :item="data"
             :type="searchType"
             :contentType="contentType"
+            :jeonwol="jeonwol"
             ref="itemContent"
             @detailIdx="detail"
             @categoryIdx="manageMarkers" />
@@ -48,14 +41,16 @@
 import ItemContent from "@/components/house/ItemContent";
 import { mapActions, mapGetters } from "vuex";
 import SearchCondition from "@/components/house/import/SearchCondition";
+import markerFood from "@/assets/img/marker_food.png";
+import markerCafe from "@/assets/img/marker_cafe.png";
+import markerHospital from "@/assets/img/marker_medic.png";
+import markerBank from "@/assets/img/marker_bank.png";
 
 export default {
   data() {
     return {
       map: null,
-      tag: {
-        type: "",
-      },
+      dongCode: "",
       markers: [],
       markersFood: [],
       markersBank: [],
@@ -65,6 +60,7 @@ export default {
       positions: [],
       searchType: 1,
       nearTarget: "",
+      jeonwol: null,
     };
   },
   components: {
@@ -94,20 +90,25 @@ export default {
       this.clearMarkers();
       this.clearContentMarkers();
 
-      console.log(this.contentType, this.searchType, this.dongCode);
-      this.getLocations({
-        gubn: this.contentType,
-        type: this.searchType,
-        dongCode: this.dongCode,
-      });
+      if (this.dongCode !== null && this.searchType !== null) {
+        // 매매일 때는 전월을 null로 처리.
+        if (this.searchType === 1) {
+          this.jeonwol = null;
+        }
+        this.getLocations({
+          gubn: this.contentType,
+          type: this.searchType,
+          jeonwol: this.jeonwol,
+          dongCode: this.dongCode,
+        });
+      }
     },
 
-    changeDong(code) {
-      this.dongCode = code;
-    },
-
-    changeType(type) {
+    setDongType(dongCode, type, jeonwol) {
+      this.dongCode = dongCode;
       this.searchType = type;
+      this.jeonwol = jeonwol;
+      console.log(dongCode, type, jeonwol);
     },
 
     setKakaoMarkers(locations) {
@@ -121,7 +122,7 @@ export default {
         geocoder.addressSearch(location.fullAddress, (data, status) => {
           if (status == kakao.maps.services.Status.OK) {
             const position = new kakao.maps.LatLng(data[0].y, data[0].x);
-
+            this.positions.push(position);
             this.displayMarker(position, location.aptName);
             bounds.extend(position);
 
@@ -151,7 +152,6 @@ export default {
 
       this.markers.push(marker);
       this.infoWindows.push(infoWindow);
-      this.positions.push(position);
     },
     detail(idx, expanded) {
       this.map.setCenter(this.positions[idx]);
@@ -194,14 +194,15 @@ export default {
       ];
 
       const keyword = ["맛집", "카페", "병원", "은행"];
-
-      const img = new kakao.maps.MarkerImage(
-        require("@/assets/img/marker_location.png"),
-        new kakao.maps.Size(37, 40),
-      );
+      const imgList = [markerFood, markerCafe, markerHospital, markerBank];
+      const imgSrc = imgList[contentIdx];
 
       const now = contentList[contentIdx];
       for (let content of contents) {
+        const img = new kakao.maps.MarkerImage(
+          imgSrc,
+          new kakao.maps.Size(45, 45),
+        );
         const marker = new kakao.maps.Marker({
           position: new kakao.maps.LatLng(content.y, content.x),
           image: img,
@@ -325,6 +326,7 @@ export default {
   },
   name: "KakaoMap.vue",
   mounted() {
+    this.clear();
     if (!window.kakao || !window.kakao.maps) {
       const script = document.createElement("script");
       script.src =
@@ -367,15 +369,20 @@ export default {
 
 .search-window {
   width: 100%;
-  height: 10vh;
-  /*background-color: var(--pink);*/
+  height: 11vh;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.search-btn {
+.search-btn-area {
   width: 20%;
-  height: 100%;
+  height: auto;
 }
+
+.search-btn {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 .map-in {
   width: calc(100% - 514px);
   height: 100%;

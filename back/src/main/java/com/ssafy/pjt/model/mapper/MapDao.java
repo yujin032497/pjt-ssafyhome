@@ -19,7 +19,7 @@ public interface MapDao {
 
     List<AddressCode> getSido();
 
-    List<AddressCode> getGugun(String sido);
+    List<AddressCode> getGugunInSido(Map<String, String> map);
 
-    List<AddressCode> getDong(String gugun);
+    List<AddressCode> getDongInGugun(Map<String, String> map);
 }

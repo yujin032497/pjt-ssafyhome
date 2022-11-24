@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div class="d-flex flex-row category-bar">
+      <div class="d-flex flex-row category-bar" v-if="expanded">
         <b-button
           class="flex-fill text-center align-self-center btn-category"
           @click="onCategory(0)">
@@ -83,6 +83,7 @@ export default {
     },
     type: { type: Number },
     contentType: { type: String },
+    jeonwol: { type: Number },
   },
   methods: {
     onEmit() {
@@ -91,10 +92,12 @@ export default {
       if (!this.expanded) {
         this.check = false;
         this.expanded = !this.expanded;
+        let url =
+          `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}` +
+          (this.type === 0 ? `&jeonwol=${this.jeonwol}` : ``);
+        console.log(url);
         http
-          .get(
-            `/map/detail?aptCode=${this.item.aptCode}&type=${this.type}&gubn=${this.contentType}`,
-          )
+          .get(url)
           .then((response) => {
             switch (response.status) {
               case 200:

@@ -4,15 +4,16 @@ import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class AddressCode {
     private String sidoCode;
     private String sidoName;
+
     private String gugunCode;
     private String gugunName;
+
     private String dongCode;
     private String dongName;
-
 }

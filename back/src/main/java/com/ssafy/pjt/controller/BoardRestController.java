@@ -57,6 +57,8 @@ public class BoardRestController {
 		logger.debug("total parameter : {}", map);
 		try {
 			int total = boardService.getTotalArticle(map);
+			
+			logger.debug(String.valueOf(total));
 			if(total>0) {
 				return new ResponseEntity<Integer>(total, HttpStatus.OK);
 			}else {

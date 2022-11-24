@@ -21,8 +21,10 @@
 	
 	<select id="getTotalArticle" resultType="int">
 		SELECT COUNT(*)
-		FROM board
-		<include refid="search"></include>
+		FROM board b, user m
+		WHERE b.user_id = m.id
+			<include refid="search"></include>
+		
 	</select>
 	
 	<sql id="search">

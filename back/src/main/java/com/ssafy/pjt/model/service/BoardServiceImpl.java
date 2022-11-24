@@ -51,9 +51,12 @@ public class BoardServiceImpl implements BoardService{
 		String key = map.get("key");
 		if ("userid".equals(key))
 			key = "b.user_id";
-
+		int spp = Integer.parseInt(map.get("spp"));
+		int pgno = (Integer.parseInt(map.get("pgno"))-1)*spp;
 		param.put("key", key == null ? "" : key);
 		param.put("word", map.get("value") == null ? "" : map.get("value"));
+		param.put("pgno", pgno);
+		param.put("spp", spp);
 		
 		System.out.println(param.toString());
 		return boardDao.getTotalArticle(param);
